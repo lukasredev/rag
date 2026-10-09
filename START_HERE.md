@@ -9,14 +9,17 @@ Your score comes from **hidden questions** on the evaluation server, shown on a 
 not the only thing that counts: every submission needs a hypothesis, and the best experiments and the best
 error analysis win too, including experiments that didn't work.
 
+**Get the code:** [github.com/lukasredev/rag](https://github.com/lukasredev/rag) — clone it as shown in step 1.
+
 All commands below are for the `papers` track. Replace `papers` with your track everywhere.
 
 ## 1. Set up (about 15 minutes; do it before the workshop if you can)
 
-You only need [uv](https://docs.astral.sh/uv/getting-started/installation/); it fetches Python 3.12 itself.
-Unzip what the organisers sent you (or clone it), then:
+You need [git](https://git-scm.com/downloads) and [uv](https://docs.astral.sh/uv/getting-started/installation/);
+uv fetches Python 3.12 itself. Get the workshop repository (no git? "Code → Download ZIP" on the GitHub page):
 
 ```bash
+git clone https://github.com/lukasredev/rag.git rag-workshop
 cd rag-workshop
 uv venv --python 3.12
 source .venv/bin/activate                                   # Windows: .venv\Scripts\activate
