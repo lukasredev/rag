@@ -7,7 +7,8 @@ It only ever uses the public test set (tracks/<name>/data/test.jsonl). Runs are 
 
 Shared, read-only deployment (see studio/__main__.py --public): RAG_STUDIO_PUBLIC=1 shows only the guide, the
 starter pipelines' code and the corpus. Nothing can be loaded, run or changed, so no code runs and no LLM is
-called. Every page needs the shared password in RAG_STUDIO_PASSWORD.
+called. Every page needs the shared password in RAG_STUDIO_PASSWORD, unless RAG_STUDIO_NO_PASSWORD=1 opens it
+to everyone (it only shows public material: the guide, starter code and corpora).
 """
 
 from __future__ import annotations
@@ -53,6 +54,7 @@ GOLD_ID_FIELDS = ["evidence", "evidence_ids", "gold_docs", "gold_sections", "gol
 
 app = FastAPI(title="RAG Studio")
 PUBLIC = config.get("RAG_STUDIO_PUBLIC") == "1"
+OPEN = PUBLIC and config.get("RAG_STUDIO_NO_PASSWORD") == "1"  # read-only and without a login
 EXTRA_PIPELINES: list[Path] = []  # set by __main__ from --pipeline
 _lock = threading.Lock()
 _tracks: dict[str, object] = {}
@@ -688,9 +690,11 @@ async def public_guard(request: Request, call_next):
     if not PUBLIC:
         return await call_next(request)
     path = request.url.path
+    if OPEN and path == "/login":
+        return RedirectResponse("/", status_code=303)
     if path == "/login":
         return await call_next(request)
-    if not _logged_in(request):
+    if not OPEN and not _logged_in(request):
         if path.startswith("/api/"):
             return JSONResponse({"detail": "log in first"}, status_code=401)
         return RedirectResponse("/login", status_code=303)
