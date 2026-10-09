@@ -1,0 +1,17 @@
+.venv/
+.cache/
+__pycache__/
+*.pyc
+tracks/*/raw/
+server/state/
+server/server.log
+server/server.pid
+.env
+
+# corpus files are large and rebuilt by tracks/<name>/prepare_data.py; only question sets are committed
+tracks/*/data/*
+!tracks/*/data/test.jsonl
+tracks/rfc/hidden/candidates.jsonl
+*.egg-info/
+.studio/
+logs/

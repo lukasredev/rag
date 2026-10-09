@@ -1,0 +1,1196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RAG Studio</title>
+<style>
+@font-face { font-family:PublicSans; src:url(static/fonts/public-sans-400.woff2) format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:PublicSans; src:url(static/fonts/public-sans-600.woff2) format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:Garamond; src:url(static/fonts/eb-garamond-latin-400-italic.woff2) format('woff2'); font-weight:400; font-style:italic; font-display:swap; }
+@font-face { font-family:Caveat; src:url(static/fonts/caveat-400.woff2) format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:Caveat; src:url(static/fonts/caveat-600.woff2) format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:PlexMono; src:url(static/fonts/plex-mono-400.woff2) format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:PlexMono; src:url(static/fonts/plex-mono-500.woff2) format('woff2'); font-weight:500; font-display:swap; }
+
+/* Same palette and conventions as the search-engine demo: ink-only diagrams, one rust accent,
+   stages told apart by icon rather than by colour. */
+:root {
+  --ink:#F5F3EE; --slab:#FBFAF6; --slab2:#ECE7DC; --rule:#C9C5BC;
+  --paper:#1F1E1C; --mute:#6B675F; --faint:#9C978E; --accent:#B8401F; --bad:#8E2A17;
+  --sans:PublicSans,"Helvetica Neue",Arial,sans-serif;
+  --serif:Garamond,Georgia,serif;
+  --hand:Caveat,"Brush Script MT",cursive;
+  --mono:PlexMono,ui-monospace,Menlo,monospace;
+  --pad:22px;
+}
+* { box-sizing:border-box; }
+html { color-scheme:light; }
+html,body { background:var(--ink); color:var(--paper); margin:0; }
+body { font:400 15.5px/1.55 var(--sans); -webkit-font-smoothing:antialiased; }
+em,i { font-family:var(--serif); font-style:italic; font-size:1.07em; }
+.mono { font-family:var(--mono); font-feature-settings:"tnum" 1; }
+h1,h2,h3 { margin:0; font-weight:600; letter-spacing:-0.5px; }
+button,input,textarea,select { font:inherit; color:inherit; }
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+@media (prefers-reduced-motion:reduce) { * { transition:none!important; animation:none!important; } }
+
+/* ── rail ── */
+.rail { display:flex; align-items:stretch; border-bottom:1px solid var(--rule); background:var(--slab);
+        position:sticky; top:0; z-index:20; flex-wrap:wrap; }
+.brand { display:flex; align-items:center; gap:9px; padding:0 18px; border-right:1px solid var(--rule);
+         font-family:var(--hand); font-size:27px; font-weight:600; white-space:nowrap; }
+.brand svg { width:30px; height:30px; }
+.ch { flex:1; display:flex; flex-direction:column; gap:2px; padding:10px 16px 11px; background:none; border:0;
+      border-bottom:3px solid transparent; cursor:pointer; text-align:left; min-width:120px; }
+.ch:hover { background:var(--slab2); }
+.ch .num { font-family:var(--mono); font-size:11.5px; color:var(--mute); }
+.ch .nm { font-size:14.5px; font-weight:600; color:var(--mute); white-space:nowrap; }
+.ch[data-state=now] { background:var(--slab2); border-bottom-color:var(--accent); }
+.ch[data-state=now] .nm, .ch[data-state=now] .num { color:var(--accent); }
+.railend { display:flex; align-items:center; gap:12px; padding:6px 16px; border-left:1px solid var(--rule);
+           font-size:13px; color:var(--mute); flex-wrap:wrap; }
+.railend select { padding:5px 8px; background:var(--ink); border:1px solid var(--rule); border-radius:3px;
+                  font-size:13.5px; max-width:230px; }
+.dot { display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--faint); margin-right:5px; }
+.dot.ready { background:var(--paper); } .dot.building { background:var(--accent); animation:pulse 1s infinite alternate; }
+.dot.error { background:var(--bad); }
+@keyframes pulse { to { opacity:.25; } }
+
+main { padding:24px var(--pad) 90px; max-width:1680px; margin:0 auto; }
+.lede { margin-bottom:14px; max-width:80ch; }
+.lede h1 { font-size:29px; line-height:1.2; }
+.lede p { color:var(--mute); margin:6px 0 0; }
+
+.panel { background:var(--slab); border:1px solid var(--rule); border-radius:4px; padding:var(--pad); margin-bottom:16px; }
+.panel > h2 { font-size:17px; margin-bottom:4px; }
+.panel > .sub { color:var(--mute); font-size:14px; margin:0 0 14px; max-width:80ch; }
+.grid2 { display:grid; grid-template-columns:minmax(0,430px) minmax(0,1fr); gap:16px; align-items:start; }
+.grid2 > :first-child { position:sticky; top:84px; }
+@media (max-width:1100px) { .grid2 { grid-template-columns:1fr; } .grid2 > :first-child { position:static; } }
+
+.btn { padding:9px 20px; font-size:15px; font-weight:600; background:var(--accent); color:#FBFAF6; border:0;
+       border-radius:4px; cursor:pointer; }
+.btn:disabled { opacity:.45; cursor:default; }
+.btn.quiet { background:transparent; color:var(--mute); border:1px solid var(--rule); font-weight:400; font-size:13.5px; padding:6px 12px; }
+.btn.quiet:hover { color:var(--paper); border-color:var(--mute); }
+.knobs { display:flex; gap:10px 22px; flex-wrap:wrap; align-items:center; font-size:14px; margin-bottom:12px; }
+.knob { display:flex; gap:7px; align-items:center; color:var(--mute); }
+.knob input[type=number], .knob input[type=text] { width:84px; padding:5px 8px; background:var(--ink); border:1px solid var(--rule);
+        border-radius:3px; font-family:var(--mono); font-size:13.5px; }
+.knob input[type=text] { width:170px; font-family:var(--sans); }
+input.wide, textarea { width:100%; padding:10px 12px; background:var(--ink); border:1px solid var(--rule); border-radius:3px; }
+textarea { min-height:74px; resize:vertical; font-size:15px; }
+
+.chip { display:inline-block; background:var(--slab); border:1px solid var(--rule); border-radius:3px; padding:3px 10px;
+        font-size:13px; cursor:pointer; margin:0 5px 5px 0; color:var(--mute); }
+.chip:hover { border-color:var(--paper); color:var(--paper); }
+.chip.on { border-color:var(--accent); color:var(--accent); background:var(--ink); }
+
+.qlist { max-height:52vh; overflow:auto; border:1px solid var(--rule); border-radius:3px; background:var(--ink); }
+.qi { padding:8px 11px; border-bottom:1px solid var(--rule); cursor:pointer; font-size:13.5px; line-height:1.4; }
+.qi:hover { background:var(--slab2); }
+.qi.on { background:var(--slab2); box-shadow:inset 3px 0 0 var(--accent); }
+.qi .meta { font-family:var(--mono); font-size:11px; color:var(--mute); display:flex; gap:10px; margin-bottom:2px; }
+.qi .mk { margin-left:auto; }
+.qi .meta span:first-child { max-width:16ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.qi .meta span { white-space:nowrap; }
+
+.tag { font-size:11px; padding:1px 6px; border-radius:2px; border:1px solid var(--rule); color:var(--mute);
+       font-family:var(--sans); white-space:nowrap; }
+.tag.good { border-color:var(--paper); color:var(--paper); }
+.tag.bad { border-color:var(--accent); color:var(--accent); }
+
+/* ── verdict ── */
+.verdict { display:grid; grid-template-columns:120px 1fr; gap:6px 16px; font-size:14.5px; }
+.verdict .k { color:var(--mute); font-size:13px; padding-top:2px; }
+.verdict .ans { font-size:16.5px; }
+.bigmark { font-family:var(--hand); font-size:34px; line-height:1; font-weight:600; }
+.bigmark.ok { color:var(--paper); } .bigmark.no { color:var(--accent); }
+.scores { display:flex; gap:6px 18px; flex-wrap:wrap; font-size:13.5px; }
+.scores span { color:var(--mute); } .scores b { font-family:var(--mono); font-weight:500; }
+.scores .primary b { color:var(--accent); }
+
+/* ── timeline ── */
+.step { display:grid; grid-template-columns:44px 1fr; gap:12px; padding:14px 0; border-top:1px solid var(--rule); }
+.step:first-child { border-top:0; }
+.step > svg { width:40px; height:40px; color:var(--paper); }
+.stephead { display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; margin-bottom:6px; }
+.stephead .n { font-weight:600; font-size:15px; }
+.stephead .t { color:var(--mute); font-size:13.5px; }
+.stephead .ms { margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--mute); }
+.doc { background:var(--ink); border:1px solid var(--rule); border-left:3px solid transparent; border-radius:3px;
+       padding:7px 11px; margin-bottom:6px; }
+.doc.rel { background:var(--slab2); border-left-color:var(--paper); }
+.doc .top { display:flex; gap:12px; font-size:12px; color:var(--mute); font-family:var(--mono); margin-bottom:2px; }
+.doc .top .id { color:var(--paper); }
+.doc.rel .top .id::after { content:"  ✓ gold"; font-weight:600; }
+.doc .txt { font-size:13.5px; line-height:1.45; white-space:pre-wrap; max-height:7.2em; overflow:hidden; cursor:pointer; }
+.doc .txt.open { max-height:none; }
+.tok { display:inline-block; padding:1px 8px; margin:2px 4px 2px 0; border-radius:3px; background:var(--slab2);
+       font-family:var(--mono); font-size:12.5px; }
+.tok small { color:var(--mute); margin-left:5px; }
+.tok.gone { opacity:.35; text-decoration:line-through; }
+.vec { display:flex; align-items:center; gap:1px; height:46px; background:var(--ink); border:1px solid var(--rule);
+       border-radius:3px; padding:4px 6px; overflow:hidden; margin-top:6px; }
+.vec i { flex:1 1 0; display:block; border-radius:1px; }
+pre { background:var(--ink); border:1px solid var(--rule); border-radius:3px; padding:11px 13px; overflow:auto;
+      font-size:12.5px; font-family:var(--mono); max-height:420px; margin:4px 0 8px; white-space:pre-wrap; word-break:break-word; }
+pre.code { white-space:pre; max-height:70vh; word-break:normal; }
+pre .hl { background:#EAD7C9; }
+details > summary { cursor:pointer; color:var(--mute); font-size:13.5px; padding:3px 0; }
+.lbl { font-size:12px; color:var(--mute); text-transform:uppercase; letter-spacing:.6px; margin-top:6px; }
+.kv { display:flex; flex-wrap:wrap; gap:4px 26px; font-size:14px; }
+.kv div { display:flex; gap:7px; } .kv span { color:var(--mute); } .kv b { font-family:var(--mono); font-weight:500; }
+.guide { max-width:92ch; line-height:1.6; font-size:15px; }
+.guide h1 { font-size:29px; margin:4px 0 12px; } .guide h2 { font-size:20px; margin:26px 0 8px; }
+.guide h3 { font-size:16px; margin:18px 0 6px; } .guide p, .guide li { max-width:84ch; }
+.guide li { margin:4px 0; } .guide li > p { margin:0 0 6px; } .guide .wrap { overflow-x:auto; } .guide pre { max-height:none; }
+.guide code { font-family:var(--mono); font-size:13px; background:var(--ink); padding:1px 4px; border-radius:2px; }
+.guide pre code { background:none; padding:0; }
+.note { color:var(--mute); font-size:13.5px; margin-top:10px; max-width:84ch; }
+.banner { background:var(--slab2); border:1px solid var(--rule); border-left:3px solid var(--paper); padding:10px 14px;
+          border-radius:3px; font-size:14.5px; margin-bottom:16px; }
+.banner.bad { border-left-color:var(--accent); }
+.empty { color:var(--mute); padding:30px 4px; text-align:center; font-family:var(--hand); font-size:24px; }
+
+/* ── tables ── */
+table { width:100%; border-collapse:collapse; font-size:13.5px; }
+th,td { text-align:right; padding:6px 10px; border-bottom:1px solid var(--rule); vertical-align:top; }
+th:first-child,td:first-child { text-align:left; }
+th { color:var(--mute); font-weight:400; font-size:12.5px; }
+td.l, th.l { text-align:left; }
+tbody tr.click { cursor:pointer; } tbody tr.click:hover { background:var(--slab2); }
+td.best { color:var(--accent); font-weight:600; }
+.scroll { overflow-x:auto; }
+.cell-bar { display:inline-block; height:8px; background:var(--paper); border-radius:1px; vertical-align:middle; margin-left:8px; opacity:.75; }
+td .clip { display:block; max-width:420px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:left; }
+.progress { height:10px; background:var(--ink); border:1px solid var(--rule); border-radius:2px; overflow:hidden; margin:10px 0 6px; }
+.progress i { display:block; height:100%; background:var(--accent); transition:width .3s; }
+
+/* ── pipeline diagram ── */
+.sprite { position:absolute; width:0; height:0; overflow:hidden; }
+.pipe { width:100%; max-width:980px; display:block; margin:4px 0 6px; }
+.pipe text { font-family:var(--hand); fill:var(--paper); font-size:21px; }
+.pipe .wire { stroke:var(--paper); stroke-width:3; fill:none; }
+.pipe .zone { font-family:var(--mono); font-size:12px; fill:var(--mute); }
+.files { display:flex; gap:6px; margin-bottom:6px; flex-wrap:wrap; }
+/* ── corpus ── */
+mark { background:#EAD7C9; color:inherit; padding:0 1px; border-radius:2px; }
+.hist { width:100%; max-width:640px; display:block; }
+.hist rect { fill:var(--paper); opacity:.8; } .hist text { font-family:var(--mono); font-size:10.5px; fill:var(--mute); }
+.facet { display:flex; gap:10px; align-items:baseline; margin-top:8px; }
+.facet .fn { flex:0 0 120px; font-size:13px; color:var(--mute); }
+.facet .chip b { font-weight:400; color:var(--faint); margin-left:4px; font-family:var(--mono); font-size:11.5px; }
+.dl { max-height:62vh; overflow:auto; border:1px solid var(--rule); border-radius:3px; background:var(--ink); }
+.di { padding:9px 12px; border-bottom:1px solid var(--rule); cursor:pointer; }
+.di:hover { background:var(--slab2); } .di.on { background:var(--slab2); box-shadow:inset 3px 0 0 var(--accent); }
+.di .t { font-weight:600; font-size:14px; line-height:1.35; }
+.di .m { font-family:var(--mono); font-size:11px; color:var(--mute); display:flex; gap:10px; flex-wrap:wrap; margin:2px 0; }
+.di .s { font-size:12.5px; color:var(--mute); line-height:1.4; }
+.part { padding:6px 0 6px 12px; border-left:3px solid transparent; }
+.part.anchor { border-left-color:var(--accent); background:var(--slab2); }
+.part h3 { font-size:15px; margin:14px 0 4px; }
+.part .pid { font-family:var(--mono); font-size:11px; color:var(--faint); }
+.part .tx { white-space:pre-wrap; font-size:14px; line-height:1.55; }
+.part pre { max-height:none; }
+.secline { background:#EAD7C9; display:inline-block; width:100%; }
+[data-doc] { cursor:pointer; } .doc .top .id[data-doc]:hover, .tok[data-doc]:hover { text-decoration:underline; }
+.cpick { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; margin:0 0 16px; }
+.cpick button { text-align:left; background:var(--slab); border:1px solid var(--rule); border-radius:4px; padding:10px 13px;
+                cursor:pointer; display:flex; gap:10px; align-items:flex-start; }
+.cpick button:hover { border-color:var(--paper); }
+.cpick button.on { border-color:var(--accent); box-shadow:inset 0 -3px 0 var(--accent); background:var(--ink); }
+.cpick svg { width:30px; height:30px; flex:none; color:var(--paper); }
+.cpick .nm { font-family:var(--hand); font-size:22px; font-weight:600; line-height:1; }
+.cpick button.on .nm { color:var(--accent); }
+.cpick .ti { font-size:12.5px; color:var(--paper); margin:3px 0 2px; line-height:1.3; }
+.cpick .st { font-family:var(--mono); font-size:11px; color:var(--mute); }
+.modes { display:flex; gap:0; margin:0 0 14px; border:1px solid var(--rule); border-radius:4px; width:max-content; overflow:hidden; }
+.modes button { background:var(--slab); border:0; padding:8px 18px; cursor:pointer; color:var(--mute); font-weight:600; }
+.modes button.on { background:var(--paper); color:var(--slab); }
+.linkmap { width:100%; display:block; }
+.linkmap .ln { fill:none; stroke:var(--paper); stroke-opacity:.16; stroke-width:1; }
+.linkmap .ln.sel { stroke:var(--accent); stroke-opacity:1; stroke-width:2.2; }
+.linkmap .qn { fill:var(--paper); cursor:pointer; } .linkmap .qn.sel { fill:var(--accent); }
+.linkmap .dn { fill:var(--slab); stroke:var(--paper); stroke-width:1.2; cursor:pointer; } .linkmap .dn.sel { fill:var(--accent); stroke:var(--accent); }
+.linkmap text { font-family:var(--sans); font-size:12px; fill:var(--mute); }
+.linkmap .grp { font-family:var(--hand); font-size:19px; fill:var(--paper); }
+.linkmap .sl { fill:var(--paper); font-size:12px; }
+.ngraph { width:100%; display:block; }
+.ngraph .wire { stroke:var(--paper); stroke-width:2; fill:none; }
+.ngraph .wire.thin { stroke-width:1; stroke-opacity:.45; }
+.ngraph text { font-family:var(--sans); font-size:13px; fill:var(--paper); }
+.ngraph text.hand { font-family:var(--hand); font-size:20px; }
+.ngraph text.small { font-size:12px; fill:var(--mute); }
+.ngraph .click { cursor:pointer; } .ngraph .click:hover text { fill:var(--accent); }
+.ev { border:1px solid var(--rule); border-radius:3px; background:var(--ink); padding:10px 13px; margin-bottom:10px; }
+.ev .h { display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
+.ev .h b { font-size:14.5px; cursor:pointer; } .ev .h b:hover { color:var(--accent); }
+.quote { font-family:var(--serif); font-style:italic; font-size:16px; border-left:3px solid var(--accent); padding:2px 0 2px 12px; margin:7px 0; }
+.psg { font-size:13.5px; line-height:1.5; margin:7px 0; padding-left:12px; border-left:3px solid var(--rule); white-space:pre-wrap; cursor:pointer; }
+.psg:hover { border-left-color:var(--paper); }
+mark.ev-hl { background:#E2C3AE; outline:2px solid var(--accent); }
+.keys { position:fixed; right:14px; bottom:12px; font-size:12px; color:var(--mute); background:var(--slab);
+        border:1px solid var(--rule); border-radius:3px; padding:5px 11px; font-family:var(--mono); opacity:.6; }
+</style>
+</head>
+<body>
+
+<!-- The search demo's own icons (ink = currentColor, rust accent as drawn), plus an LLM and a check mark. -->
+<svg class="sprite" aria-hidden="true"><defs>
+  <symbol id="i-documents" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 19 11 Q 34 10 50 11 L 62 23 Q 61 46 62 70 Q 40 71 18 70 Q 17 40 19 11 Z" stroke="currentColor" fill="#F5F3EE"/>
+    <path d="M 50 11 Q 51 17 50 23 L 62 23" stroke="currentColor"/>
+    <path d="M 33 23 Q 48 22 64 23 L 76 35 Q 75 58 76 84 Q 54 85 32 84 Q 31 54 33 23 Z" stroke="currentColor" fill="#F5F3EE"/>
+    <path d="M 64 23 Q 65 29 64 35 L 76 35" stroke="currentColor"/>
+    <path d="M 41 48 Q 54 47 67 48" stroke="#B8401F"/>
+    <path d="M 41 59 Q 52 60 63 59 M 41 70 Q 49 69 57 70" stroke="currentColor"/>
+  </symbol>
+  <symbol id="i-query" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 63 39 C 63 26 53 16 40 16 C 27 16 17 27 17 40 C 17 53 27 63 40 63 C 53 63 63 53 63 41 C 63 38 62 35 61 33" stroke="currentColor"/>
+    <path d="M 57 57 L 80 80" stroke="currentColor" stroke-width="8"/>
+    <path d="M 28 36 Q 30 27 38 24" stroke="#B8401F"/>
+  </symbol>
+  <symbol id="i-split" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 14 13 Q 48 11 83 13 Q 85 23 83 34 Q 48 36 13 34 Q 11 23 14 13 Z" stroke="currentColor"/>
+    <path d="M 36 6 L 36 41 M 60 6 L 60 41" stroke="#B8401F"/>
+    <path d="M 13 59 Q 22 58 32 59 Q 33 70 32 82 Q 22 83 12 82 Q 11 70 13 59 Z" stroke="currentColor"/>
+    <path d="M 39 59 Q 48 58 58 59 Q 59 70 58 82 Q 48 83 38 82 Q 37 70 39 59 Z" stroke="currentColor"/>
+    <path d="M 65 59 Q 74 58 84 59 Q 85 70 84 82 Q 74 83 64 82 Q 63 70 65 59 Z" stroke="currentColor"/>
+  </symbol>
+  <symbol id="i-filter" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 12 14 Q 48 12 84 14 L 57 46 L 57 68 L 39 60 L 39 46 Z" stroke="currentColor"/>
+    <circle cx="48" cy="83" r="5" fill="#B8401F" stroke="none"/>
+  </symbol>
+  <symbol id="i-inverted" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 10 22 L 30 22 M 10 48 L 34 48 M 10 74 L 26 74" stroke="currentColor" stroke-width="6"/>
+    <path d="M 40 22 L 52 22 M 47 17 L 52 22 L 47 27 M 40 48 L 52 48 M 47 43 L 52 48 L 47 53 M 40 74 L 52 74 M 47 69 L 52 74 L 47 79" stroke="#B8401F"/>
+    <rect x="60" y="17" width="10" height="10" rx="2" stroke="currentColor"/><rect x="76" y="17" width="10" height="10" rx="2" stroke="currentColor"/>
+    <rect x="60" y="43" width="10" height="10" rx="2" stroke="currentColor"/><rect x="60" y="69" width="10" height="10" rx="2" stroke="currentColor"/>
+    <rect x="76" y="69" width="10" height="10" rx="2" stroke="currentColor"/>
+  </symbol>
+  <symbol id="i-embedding" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 16 10 Q 15 46 16 80 Q 51 81 86 80" stroke="currentColor"/>
+    <path d="M 16 80 L 64 32" stroke="#B8401F"/><path d="M 50.5 35.6 L 64 32 L 60.4 45.5" stroke="#B8401F"/>
+    <circle cx="34" cy="28" r="3.5" fill="currentColor" stroke="none"/><circle cx="76" cy="58" r="3.5" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-vector" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="48" cy="48" r="23" stroke="#B8401F" stroke-dasharray="6 7"/><circle cx="48" cy="48" r="5.5" fill="#B8401F" stroke="none"/>
+    <circle cx="38" cy="38" r="4" fill="currentColor" stroke="none"/><circle cx="59" cy="56" r="4" fill="currentColor" stroke="none"/>
+    <circle cx="14" cy="18" r="4" fill="currentColor" stroke="none"/><circle cx="80" cy="14" r="4" fill="currentColor" stroke="none"/>
+    <circle cx="86" cy="64" r="4" fill="currentColor" stroke="none"/><circle cx="13" cy="76" r="4" fill="currentColor" stroke="none"/>
+    <circle cx="62" cy="88" r="4" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-rank" viewBox="0 0 96 96" fill="none" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 16 24 Q 48 23 80 24" stroke="#B8401F"/><path d="M 16 48 Q 40 49 64 48" stroke="currentColor"/><path d="M 16 72 Q 31 71 46 72" stroke="currentColor"/>
+  </symbol>
+  <symbol id="i-fuse" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 10 20 C 34 20 40 48 52 48 M 10 76 C 34 76 40 48 52 48" stroke="currentColor"/>
+    <path d="M 52 48 L 84 48 M 75 39 L 85 48 L 75 57" stroke="#B8401F"/>
+  </symbol>
+  <symbol id="i-rerank" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 12 24 Q 38 23 62 24 M 12 48 Q 36 49 62 48 M 12 72 Q 38 71 62 72" stroke="currentColor"/>
+    <path d="M 74 72 Q 92 48 74 24 M 74.3 34 L 74 24 L 83.5 27.1" stroke="#B8401F"/>
+  </symbol>
+  <symbol id="i-results" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="18" cy="24" r="5.5" fill="#B8401F" stroke="none"/><circle cx="18" cy="48" r="4" fill="currentColor" stroke="none"/>
+    <circle cx="18" cy="72" r="4" fill="currentColor" stroke="none"/>
+    <path d="M 32 24 Q 57 23 82 24 M 32 48 Q 52 49 72 48 M 32 72 Q 49 71 66 72" stroke="currentColor"/>
+  </symbol>
+  <symbol id="i-index" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 20 20 C 20 8 76 8 76 20 C 76 32 20 32 20 20 Z" stroke="currentColor"/>
+    <path d="M 20 20 Q 19 50 20 78 M 76 20 Q 77 50 76 78 M 20 78 C 20 90 76 90 76 78" stroke="currentColor"/>
+    <path d="M 20 40 C 20 52 76 52 76 40" stroke="currentColor"/><path d="M 20 59 C 20 71 76 71 76 59" stroke="#B8401F"/>
+  </symbol>
+  <symbol id="i-llm" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 14 18 Q 48 15 82 18 Q 85 40 82 62 Q 62 64 44 62 L 26 78 L 29 62 Q 20 63 14 62 Q 11 40 14 18 Z" stroke="currentColor"/>
+    <circle cx="34" cy="40" r="4" fill="#B8401F" stroke="none"/><circle cx="48" cy="40" r="4" fill="#B8401F" stroke="none"/>
+    <circle cx="62" cy="40" r="4" fill="#B8401F" stroke="none"/>
+  </symbol>
+  <symbol id="i-check" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 16 16 Q 48 14 80 16 Q 82 48 80 80 Q 48 82 16 80 Q 14 48 16 16 Z" stroke="currentColor"/>
+    <path d="M 30 50 L 43 63 L 68 32" stroke="#B8401F" stroke-width="6"/>
+  </symbol>
+  <symbol id="i-step" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="48" cy="48" r="30" stroke="currentColor"/><path d="M 40 34 L 56 48 L 40 62" stroke="#B8401F"/>
+  </symbol>
+</defs></svg>
+
+<nav class="rail" id="rail"></nav>
+<main><div id="view"></div></main>
+<div class="keys">1-5 views &nbsp; j/k next question &nbsp; click a doc id to open it</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = (v, d=3) => typeof v === 'number' ? v.toFixed(d) : (v ?? '–');
+const usd = v => v == null ? '–' : v < 0.01 ? `$${v.toFixed(4)}` : `$${v.toFixed(2)}`;
+const store = { get(k, d) { try { return JSON.parse(localStorage.getItem('studio:' + k)) ?? d; } catch { return d; } },
+                set(k, v) { try { localStorage.setItem('studio:' + k, JSON.stringify(v)); } catch {} } };
+
+async function api(path, body, method) {
+  const r = await fetch(path, body === undefined ? { method: method || 'GET' }
+    : { method: method || 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!r.ok) { let m = r.statusText; try { m = (await r.json()).detail || m; } catch {} throw new Error(m); }
+  return r.json();
+}
+
+const VIEWS = [
+  { id: 'start', name: 'Start here' },
+  { id: 'pipeline', name: 'Pipeline' },
+  { id: 'corpus', name: 'Corpus' },
+  { id: 'ask', name: 'One question' },
+  { id: 'run', name: 'Test run' },
+  { id: 'compare', name: 'Compare runs' },
+];
+const PUBLIC_VIEWS = ['start', 'pipeline', 'corpus'];  // the shared read-only Studio: nothing runs
+const views = () => S.info?.public ? VIEWS.filter(v => PUBLIC_VIEWS.includes(v.id)) : VIEWS;
+const S = { info: null, track: store.get('track'), pipe: store.get('pipe', {}), view: store.get('view', 'start'),
+            questions: [], qid: null, typeFilter: null, search: '', ask: null, asking: false, load: null,
+            seen: {}, session: 0, job: null, runs: [], picked: [], runDetail: null, onlyWrong: false, openRow: null,
+            cx: { stats: null, q: '', facets: {}, sort: '', docs: [], total: 0, doc: null, docError: null,
+                  mode: 'docs', qdata: null, qsel: null, qdetail: null, qType: null, qSearch: '', hl: null } };
+
+const curTrack = () => S.info.tracks.find(t => t.name === S.track);
+const curPipe = () => S.pipe[S.track];
+const pipeLabel = () => (curTrack().pipelines.find(p => p.path === curPipe()) || {}).label || '?';
+const seenSteps = () => S.seen[curPipe()] || (S.seen[curPipe()] = new Set());
+
+// ── rail ────────────────────────────────────────────────────────────────────────────────────────
+function rail() {
+  const t = curTrack();
+  const st = S.load ? S.load.status : 'idle';
+  $('rail').innerHTML = `
+    <div class="brand"><svg><use href="#i-llm"/></svg>RAG Studio</div>
+    ${views().map((v, i) => `<button class="ch" data-v="${v.id}" data-state="${S.view === v.id ? 'now' : ''}">
+       <span class="num">0${i}</span><span class="nm">${v.name}</span></button>`).join('')}
+    <div class="railend">
+      <label>track <select id="selTrack">${S.info.tracks.map(x => `<option value="${x.name}" ${x.name === S.track ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
+      <label>pipeline <select id="selPipe">${t.pipelines.map(p => `<option value="${esc(p.path)}" ${p.path === curPipe() ? 'selected' : ''}>${esc(p.label)}</option>`).join('')}
+        ${S.info.public ? '' : '<option value="__add">+ add my pipeline…</option>'}</select></label>
+      ${S.info.public ? '<span title="This shared Studio only shows code and data. Run Studio on your laptop to run pipelines.">read-only</span>' : `
+      <span title="${esc(S.load?.error || '')}"><span class="dot ${st}"></span>${st}${S.load?.stale ? ' (code changed)' : ''}</span>
+      <label>model <select id="selModel">${[...new Set([S.info.model, ...S.info.models].filter(Boolean))].map(m => `<option ${m === S.info.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></label>
+      <span title="This session: ${usd(S.session)}. Total counted by ragkit on this machine (RAG_MAX_USD is the cap).">spent ${usd(S.info.spent)}${S.info.cap != null ? ` of ${usd(S.info.cap)}` : ''}</span>`}
+    </div>`;
+  document.querySelectorAll('.ch').forEach(b => b.onclick = () => go(b.dataset.v));
+  $('selTrack').onchange = e => switchTrack(e.target.value);
+  $('selPipe').onchange = e => e.target.value === '__add' ? addPipeline() : switchPipe(e.target.value);
+  if ($('selModel')) $('selModel').onchange = async e => { const r = await api('/api/model', { model: e.target.value }); S.info.model = r.model; rail(); };
+}
+
+async function refreshSpend() { try { Object.assign(S.info, await api('/api/spend')); } catch {} rail(); }
+function go(v) { S.view = v; store.set('view', v); rail(); render(); if (v === 'compare' || v === 'run') loadRuns(); }
+
+async function switchTrack(name) {
+  S.track = name; store.set('track', name);
+  if (!curPipe()) S.pipe[name] = curTrack().pipelines[0].path;
+  store.set('pipe', S.pipe);
+  S.questions = await api(`/api/questions/${name}`);
+  S.qid = null; S.ask = null; S.typeFilter = null; S.runDetail = null; S.picked = [];
+  S.cx = { stats: null, q: '', facets: {}, sort: '', docs: [], total: 0, doc: null, docError: null,
+           mode: S.cx?.mode || 'docs', qdata: null, qsel: null, qdetail: null, qType: null, qSearch: '', hl: null };
+  await ensureLoaded(); loadRuns(); render();
+}
+async function switchPipe(path) {
+  S.pipe[S.track] = path; store.set('pipe', S.pipe); S.ask = null; await ensureLoaded(); render();
+}
+async function addPipeline() {
+  const path = window.prompt ? window.prompt('Path to your pipeline.py (or its folder):') : null;
+  if (!path) { rail(); return; }
+  try { const r = await api('/api/pipelines', { path }); S.info = await api('/api/info'); await switchPipe(r.path); }
+  catch (e) { alert(e.message); rail(); }
+}
+
+let pollTimer = null;
+async function ensureLoaded() {
+  if (S.info.public) { S.load = { status: 'read-only' }; rail(); return; }
+  try { S.load = await api('/api/load', { track: S.track, path: curPipe() }); }
+  catch (e) { S.load = { status: 'error', error: e.message }; }
+  rail();
+  clearTimeout(pollTimer);
+  if (S.load.status === 'building') pollTimer = setTimeout(async () => {
+    S.load = await api(`/api/load?track=${S.track}&path=${encodeURIComponent(curPipe())}`);
+    if (S.load.status === 'building') return ensureLoaded();
+    rail(); render();
+  }, 1500);
+}
+
+// ── shared diagram ──────────────────────────────────────────────────────────────────────────────
+function node(cx, cy, icon, label, on) {
+  return `<g opacity="${on ? 1 : 0.22}"><use href="#i-${icon}" x="${cx - 26}" y="${cy - 26}" width="52" height="52"/>
+    <text x="${cx}" y="${cy + 46}" text-anchor="middle">${label}</text></g>`;
+}
+function wire(d, on) { return `<path d="${d}" class="wire" opacity="${on ? 1 : 0.2}" marker-end="url(#arr)"/>`; }
+const ARROW = `<defs><marker id="arr" orient="auto" markerWidth="8" markerHeight="8" refX="7" refY="4" overflow="visible">
+  <path d="M1 1L7 4L1 7" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></marker></defs>`;
+const isRerank = s => /rerank|fuse|rrf|filter|hyde|decompos|rewrite/i.test(s);
+
+function pipeDiagram(seen, ready) {
+  const has = s => seen.has(s);
+  const anyRet = has('bm25') || has('embed') || has('retrieve');
+  const extra = [...seen].some(isRerank);
+  return `<svg class="pipe" viewBox="0 0 980 330" role="img" style="color:var(--paper)"
+    aria-label="Indexing builds an index from the documents once; each question is matched against it, the best chunks go into the prompt, the LLM answers, the answer is scored">
+    ${ARROW}
+    <text class="zone" x="0" y="14">ONCE, WHEN THE PIPELINE IS BUILT</text>
+    <text class="zone" x="0" y="150">FOR EVERY QUESTION</text>
+    ${wire('M86 62H166', ready)} ${wire('M226 62H306', ready)}
+    ${wire('M360 88V186', ready && anyRet)}
+    ${wire('M86 222C130 222 140 178 168 178', has('bm25'))} ${wire('M86 222C130 222 140 268 168 268', has('embed'))}
+    ${wire('M226 178C270 178 280 222 304 222', has('bm25'))} ${wire('M226 268C270 268 280 222 304 222', has('embed'))}
+    ${wire('M386 222H466', extra)} ${wire('M386 222C430 222 430 300 490 300 C 560 300 560 222 596 222', anyRet && !extra)}
+    ${wire('M526 222H596', extra)} ${wire('M656 222H736', has('llm'))} ${wire('M796 222H866', has('score'))}
+    ${node(60, 62, 'documents', 'corpus', ready)} ${node(196, 62, 'split', 'chunks', ready)} ${node(336, 62, 'index', 'index', ready)}
+    ${node(60, 222, 'query', 'question', true)}
+    ${node(196, 178, 'inverted', 'BM25', has('bm25'))} ${node(196, 268, 'embedding', 'embedding', has('embed'))}
+    ${node(356, 222, 'rank', 'retrieve', anyRet)} ${node(496, 222, 'rerank', 'refine', extra)}
+    ${node(626, 222, 'llm', 'LLM', has('llm'))} ${node(766, 222, 'results', 'answer', has('answer'))}
+    ${node(896, 222, 'check', 'score', has('score'))}
+  </svg>`;
+}
+
+// ── 01 pipeline ─────────────────────────────────────────────────────────────────────────────────
+let srcCache = {};
+async function viewPipeline() {
+  const t = curTrack(), p = t.pipelines.find(x => x.path === curPipe());
+  const L = S.load || {};
+  const seen = seenSteps();
+  const build = (L.build_trace || []);
+  const buildEmbeds = build.filter(e => e.step === 'embed');
+  const embN = buildEmbeds.reduce((a, e) => a + e.data.n, 0);
+  $('view').innerHTML = `
+    <div class="lede"><h1>${esc(t.title)} · <span style="color:var(--accent)">${esc(p.label)}</span></h1>
+      <p>${esc(t.n)} test questions, scored by <b>${esc(t.primary)}</b>. ${S.info.public
+        ? 'This shared Studio shows the code only. Run Studio on your laptop (00 Start here, step 3) to see the steps light up on real questions.'
+        : 'Steps light up once the pipeline has done them on a question.'}</p></div>
+    ${L.status === 'error' ? `<div class="banner bad"><b>Building the pipeline failed.</b><pre>${esc(L.error)}</pre></div>` : ''}
+    ${L.status === 'building' ? `<div class="banner">Building the index… ${fmt(L.build_seconds, 0)} s. The first build embeds the whole corpus and can take a few minutes; after that it comes from the cache.</div>` : ''}
+    <div class="panel">${pipeDiagram(seen, L.status === 'ready')}
+      ${seen.size ? `<div class="note">Steps seen so far: ${[...seen].map(s => `<span class="tok">${esc(s)}</span>`).join('')}</div>`
+        : S.info.public ? '' : `<div class="note">Ask a question (view 03) to see which steps this pipeline actually runs.</div>`}
+    </div>
+    ${S.info.public ? '' : `<div class="panel"><h2>Build</h2>
+      <div class="kv"><div><span>status</span><b>${esc(L.status || '–')}</b></div><div><span>build time</span><b>${fmt(L.build_seconds, 1)} s</b></div>
+        <div><span>texts embedded</span><b>${embN || 0}</b></div>
+        ${buildEmbeds[0] ? `<div><span>embedding model</span><b>${esc(buildEmbeds[0].data.model)}</b></div>` : ''}
+        <div><span>default LLM</span><b>${esc(S.info.model || 'no API key')}</b></div></div>
+      ${build.length ? `<details><summary>${build.length} step(s) logged while building</summary>${build.map(e => stepHtml(e, 0, new Set())).join('')}</details>` : ''}
+      ${S.load?.stale ? `<div class="note">The code changed since this build. <button class="btn quiet" id="rebuild">rebuild now</button></div>` : ''}
+    </div>`}
+    <div class="panel"><h2>What this pipeline says about itself</h2><pre>${esc(p.doc || '(no docstring)')}</pre></div>
+    <div class="panel"><h2>Source</h2><p class="sub">${esc(p.path)}</p><div id="src">loading…</div></div>`;
+  if ($('rebuild')) $('rebuild').onclick = ensureLoaded;
+  try {
+    const src = srcCache[p.path] || (srcCache[p.path] = await api(`/api/source?path=${encodeURIComponent(p.path)}`));
+    const names = Object.keys(src.files);
+    let cur = src.main;
+    const draw = () => {
+      if (!$('src')) return;
+      $('src').innerHTML = `<div class="files">${names.map(n => `<span class="chip ${n === cur ? 'on' : ''}" data-f="${esc(n)}">${esc(n)}</span>`).join('')}</div>
+        <pre class="code">${esc(src.files[cur])}</pre>`;
+      $('src').querySelectorAll('[data-f]').forEach(c => c.onclick = () => { cur = c.dataset.f; draw(); });
+    };
+    draw();
+  } catch (e) { $('src').textContent = e.message; }
+}
+
+// ── step rendering (shared by 02 and 03) ────────────────────────────────────────────────────────
+const STEP_ICON = { llm: 'llm', embed: 'embedding', bm25: 'inverted', retrieve: 'rank', answer: 'results', score: 'check' };
+const stepIcon = s => STEP_ICON[s] || (isRerank(s) ? 'rerank' : 'step');
+
+function isGold(id, gold) {
+  return gold.has(id) || [...gold].some(g => id.startsWith(g) && /[^A-Za-z0-9]/.test(id[g.length] || '') ||
+                                              g.startsWith(id) && /[^A-Za-z0-9]/.test(g[id.length] || ''));
+}
+function hitsHtml(hits, gold) {
+  return hits.map((h, i) => {
+    const id = h.id ?? h.index;
+    const rel = h.id != null && isGold(String(h.id), gold);
+    return `<div class="doc ${rel ? 'rel' : ''}"><div class="top"><span>#${i + 1}</span><span class="id" ${h.id != null ? `data-doc="${esc(h.id)}" title="open in the corpus explorer"` : ''}>${esc(id)}</span>
+      ${h.score != null ? `<span>score ${fmt(+h.score, 3)}</span>` : ''}</div>
+      ${h.text ? `<div class="txt">${esc(h.text)}</div>` : ''}</div>`;
+  }).join('');
+}
+function highlight(text, needle) {
+  const t = esc(text);
+  if (!needle || needle.length < 8) return t;
+  const n = esc(needle), i = t.indexOf(n);
+  return i < 0 ? t : t.slice(0, i) + `<span class="hl">${n}</span>` + t.slice(i + n.length);
+}
+function msgText(m) {
+  return typeof m.content === 'string' ? m.content
+    : (m.content || []).map(b => b.text ?? JSON.stringify(b)).join('\n');
+}
+function stepHtml(e, t0, gold, question) {
+  const d = e.data || {};
+  let body = '';
+  if (e.step === 'llm') {
+    const c = d.cached ? `<span class="tag good">cached · free</span>` : `<span class="tag">${d.input_tokens} in / ${d.output_tokens} out tokens</span>`;
+    body = `<div class="stephead" style="margin-top:-4px">${c}<span class="tag">${fmt(d.seconds, 2)} s</span></div>
+      ${d.system ? `<div class="lbl">system prompt</div><pre>${esc(d.system)}</pre>` : ''}
+      ${(d.messages || []).map(m => `<div class="lbl">${esc(m.role)} message (${msgText(m).length.toLocaleString()} chars)</div>
+          <pre>${highlight(msgText(m), question)}</pre>`).join('')}
+      <div class="lbl">response</div><pre style="border-left:3px solid var(--accent)">${esc(d.response)}</pre>`;
+  } else if (e.step === 'embed') {
+    const v = d.vector_preview || [];
+    const mx = Math.max(...v.map(Math.abs), 1e-6);
+    body = `<div class="kv"><div><span>model</span><b>${esc(d.model)}</b></div><div><span>texts</span><b>${d.n}</b></div>
+        <div><span>newly computed</span><b>${d.computed}</b></div><div><span>dimensions</span><b>${d.dim}</b></div></div>
+      ${(d.texts || []).slice(0, 2).map(x => `<pre>${esc(x)}</pre>`).join('')}
+      <div class="vec" title="first ${v.length} of ${d.dim} numbers of the first vector">${v.map(x =>
+        `<i style="height:${Math.max(2, Math.abs(x) / mx * 100)}%;background:${x < 0 ? 'var(--faint)' : 'var(--paper)'}"></i>`).join('')}</div>`;
+  } else if (e.step === 'bm25') {
+    const terms = d.terms || {};
+    body = `<div>${Object.entries(terms).map(([k, v]) => `<span class="tok ${v == null ? 'gone' : ''}" title="${v == null ? 'not in any document' : 'idf ' + v}">${esc(k)}<small>${v == null ? '–' : v}</small></span>`).join('')}</div>
+      <div class="note" style="margin-top:4px">Query terms with their idf (rare terms count more; struck-out terms occur in no document). ${(d.hits || []).length} hits; ids appear in the next step.</div>`;
+  } else {
+    const { hits, ...rest } = d;
+    body = (Array.isArray(hits) ? hitsHtml(hits, gold) : '') +
+      (Object.keys(rest).length ? `<pre>${esc(JSON.stringify(rest, null, 1))}</pre>` : '');
+  }
+  const ms = t0 ? `+${Math.round((e.t - t0) * 1000)} ms` : '';
+  return `<div class="step"><svg><use href="#i-${stepIcon(e.step)}"/></svg><div>
+    <div class="stephead"><span class="n">${esc(e.step)}</span><span class="t">${esc(e.title)}</span><span class="ms">${ms}</span></div>${body}</div></div>`;
+}
+
+function verdictHtml(q, r, primary) {
+  const pred = r.prediction, sc = r.scores || {};
+  const gold = new Set(q.gold_ids || []);
+  const p = sc[primary];
+  const goldAns = Array.isArray(q.gold_answer) ? q.gold_answer.join('  |  ') : q.gold_answer;
+  const cites = pred.citations || [];
+  const missed = [...gold].filter(g => !cites.some(c => isGold(c, new Set([g]))));
+  return `<div class="verdict">
+    ${q.id ? `<div class="k">result</div><div>${p == null ? '' : `<span class="bigmark ${p >= 0.5 ? 'ok' : 'no'}">${p >= 0.5 ? '✓ right' : '✗ wrong'}</span>`}
+      <div class="scores">${Object.entries(sc).map(([k, v]) => `<div class="${k === primary ? 'primary' : ''}"><span>${esc(k)}</span> <b>${fmt(v)}</b></div>`).join('')}</div></div>` : ''}
+    <div class="k">answer</div><div class="ans">${pred.error ? `<pre>${esc(pred.error)}</pre>` : esc(pred.answer) || '<i>(empty)</i>'}</div>
+    ${q.id ? `<div class="k">expected</div><div class="ans">${esc(goldAns)}</div>` : ''}
+    <div class="k">cited</div><div>${cites.map(c => `<span class="tok" data-doc="${esc(c)}" style="${isGold(c, gold) ? 'outline:1.5px solid var(--paper)' : ''}">${esc(c)}${isGold(c, gold) ? ' ✓' : ''}</span>`).join('') || '–'}</div>
+    ${missed.length ? `<div class="k">missed gold</div><div>${missed.map(g => `<span class="tok" data-doc="${esc(g)}">${esc(g)}</span>`).join('')}</div>` : ''}
+    <div class="k">cost</div><div class="mono" style="font-size:13px">${costLine(r.cost)}${r.judge_cost?.calls ? ` · judge ${usd(r.judge_cost.usd)}` : ''} · ${fmt(pred.seconds, 2)} s</div>
+  </div>`;
+}
+function costLine(c) {
+  if (!c) return '–';
+  if (!c.calls) return 'no LLM calls';
+  return `${c.calls} LLM call(s)${c.cached ? `, ${c.cached} cached` : ''} · ${c.input_tokens.toLocaleString()} in / ${c.output_tokens.toLocaleString()} out · ${c.priced ? usd(c.usd) : 'price unknown'}` +
+    (c.cached && c.priced ? ` (≈ ${usd(c.usd_uncached)} uncached)` : '');
+}
+function traceHtml(r, q) {
+  const t0 = r.trace.length ? r.trace[0].t : 0;
+  const gold = new Set(q.gold_ids || []);
+  return r.trace.length ? r.trace.map(e => stepHtml(e, t0, gold, q.question)).join('')
+    : `<div class="note">No steps were recorded. Add <code>trace.log("retrieve", hits=[...])</code> to your pipeline to see what it retrieves (see ragkit/trace.py).</div>`;
+}
+
+// ── 03 one question ─────────────────────────────────────────────────────────────────────────────
+function filteredQs() {
+  const s = S.search.toLowerCase();
+  return S.questions.filter(q => (!S.typeFilter || q.type === S.typeFilter) && (!s || q.question.toLowerCase().includes(s) || q.id.includes(s)));
+}
+function viewAsk() {
+  const t = curTrack();
+  const qs = filteredQs();
+  const ready = S.load?.status === 'ready';
+  $('view').innerHTML = `
+    <div class="grid2">
+      <div class="panel"><h2>Pick a test question</h2><p class="sub">${qs.length} of ${S.questions.length} shown. Or type your own below (no gold answer then).</p>
+        <div style="margin-bottom:6px"><span class="chip ${!S.typeFilter ? 'on' : ''}" data-t="">all</span>${Object.entries(t.types).map(([k, n]) =>
+          `<span class="chip ${S.typeFilter === k ? 'on' : ''}" data-t="${esc(k)}">${esc(k)} ${n}</span>`).join('')}</div>
+        <input class="wide" id="qsearch" placeholder="filter by text or id" value="${esc(S.search)}" style="margin-bottom:8px">
+        <div class="qlist" id="qlist">${qs.slice(0, 400).map(q => `<div class="qi ${q.id === S.qid ? 'on' : ''}" data-q="${esc(q.id)}">
+          <div class="meta"><span>${esc(q.id)}</span><span>${esc(q.type || '')}</span></div>${esc(q.question)}</div>`).join('')}</div>
+        <div style="display:flex;gap:8px;margin-top:10px"><button class="btn quiet" id="rnd">random question</button></div>
+        <div class="lbl" style="margin-top:14px">your own question</div>
+        <textarea id="own" placeholder="Ask anything about the corpus…"></textarea>
+        <button class="btn" id="askOwn" style="margin-top:8px" ${ready ? '' : 'disabled'}>Ask</button>
+      </div>
+      <div id="askOut">${askOut()}</div>
+    </div>`;
+  document.querySelectorAll('[data-t]').forEach(c => c.onclick = () => { S.typeFilter = c.dataset.t || null; viewAsk(); });
+  $('qsearch').oninput = e => { S.search = e.target.value; const pos = e.target.selectionStart; viewAsk(); $('qsearch').focus(); $('qsearch').setSelectionRange(pos, pos); };
+  document.querySelectorAll('[data-q]').forEach(c => c.onclick = () => askQ(c.dataset.q));
+  $('rnd').onclick = () => { const qs = filteredQs(); if (qs.length) askQ(qs[Math.floor(Math.random() * qs.length)].id); };
+  $('askOwn').onclick = () => { const v = $('own').value.trim(); if (v) askQ(null, v); };
+  const on = document.querySelector('.qi.on'); if (on) on.scrollIntoView({ block: 'nearest' });
+}
+function askOut() {
+  if (S.load?.status === 'building') return `<div class="panel"><div class="empty">building the index… (${fmt(S.load.build_seconds, 0)} s)</div></div>`;
+  if (S.load?.status === 'error') return `<div class="banner bad"><b>The pipeline failed to build.</b><pre>${esc(S.load.error)}</pre></div>`;
+  if (S.asking) return `<div class="panel"><div class="empty">thinking…</div></div>`;
+  if (S.askError) return `<div class="banner bad">${esc(S.askError)}</div>`;
+  if (!S.ask) return `<div class="panel"><div class="empty">pick a question on the left</div></div>`;
+  const r = S.ask, q = r.question;
+  return `<div class="panel"><h2 style="font-size:19px;margin-bottom:12px">${esc(q.question)}</h2>${verdictHtml(q, r, curTrack().primary)}</div>
+    <div class="panel"><h2>What happened, step by step</h2><p class="sub">${r.trace.length} step(s) recorded inside <code>answer()</code>.</p>${traceHtml(r, q)}</div>
+    ${r.judge?.length ? `<div class="panel"><details><summary>How it was scored: ${r.judge.length} LLM-judge call(s)</summary>${r.judge.map(e => stepHtml(e, 0, new Set())).join('')}</details></div>` : ''}`;
+}
+async function askQ(id, text) {
+  S.qid = id; S.asking = true; S.askError = null; viewAsk();
+  try {
+    S.ask = await api('/api/ask', { track: S.track, path: curPipe(), question_id: id, question: text });
+    const seen = seenSteps();
+    S.ask.trace.forEach(e => seen.add(e.step)); seen.add('answer'); if (S.ask.scores) seen.add('score');
+    S.session += (S.ask.cost?.usd || 0) + (S.ask.judge_cost?.usd || 0);
+  } catch (e) { S.askError = e.message; S.ask = null; if (/building|stale/.test(e.message)) ensureLoaded(); }
+  S.asking = false; refreshSpend(); if (S.view === 'ask') viewAsk();
+}
+
+// ── 02 corpus ───────────────────────────────────────────────────────────────────────────────────
+const cxTerms = () => (S.cx.q.toLowerCase().match(/\w+/g) || []);
+function mark(text) {
+  const t = esc(text), terms = cxTerms();
+  if (!terms.length) return t;
+  return t.replace(new RegExp(`\\b(${terms.map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'gi'), '<mark>$1</mark>');
+}
+async function cxLoad(more) {
+  const c = S.cx, facet = Object.entries(c.facets).map(([k, v]) => `${k}:${v}`).join('|');
+  const r = await api(`/api/corpus/${S.track}/docs?q=${encodeURIComponent(c.q)}&facet=${encodeURIComponent(facet)}&sort=${c.sort}&offset=${more ? c.docs.length : 0}&limit=60`);
+  c.docs = more ? c.docs.concat(r.docs) : r.docs; c.total = r.total;
+}
+async function openDoc(id, stay, hl) {
+  S.cx.docError = null; S.cx.mode = 'docs'; S.cx.hl = hl || null;
+  try { S.cx.doc = await api(`/api/corpus/${S.track}/doc?id=${encodeURIComponent(id)}`); }
+  catch (e) { S.cx.doc = null; S.cx.docError = e.message; }
+  if (!stay && S.view !== 'corpus') { go('corpus'); return; }
+  viewCorpus();
+}
+function histogram(h) {
+  if (!h.length) return '';
+  const W = 600, H = 120, bw = W / h.length, mx = Math.max(...h.map(b => b.n));
+  const lbl = v => v >= 1000 ? `${v / 1000}k` : v;
+  return `<svg class="hist" viewBox="0 -14 ${W} ${H + 48}" role="img" aria-label="documents by length in words">
+    ${h.map((b, i) => { const y = H - b.n / mx * H; return `<rect x="${i * bw + 3}" y="${y}" width="${bw - 6}" height="${H - y}" rx="2"><title>${b.n} documents with ${b.lo}–${b.hi} words</title></rect>
+      <text x="${i * bw + bw / 2}" y="${y - 4}" text-anchor="middle">${b.n}</text>
+      <text x="${i * bw + bw / 2}" y="${H + 14}" text-anchor="middle">${lbl(b.lo)}–${b.hi >= 1e9 ? '' : lbl(b.hi)}</text>`; }).join('')}
+    <text x="${W / 2}" y="${H + 31}" text-anchor="middle">words per document</text></svg>`;
+}
+function docHtml(d) {
+  const meta = Object.entries(d.meta).filter(([, v]) => v != null && v !== '');
+  const anchorIsPart = d.anchor && d.parts.some(p => p.id === d.anchor) && !S.cx.hl;
+  const secRx = d.anchor && !anchorIsPart && !S.cx.hl && !d.parts.some(p => p.id === d.anchor) ? new RegExp(`^\\s*(Appendix\\s+)?${d.anchor.replace(/\./g, '\\.')}\\.?\\s+\\S`) : null;
+  let found = false;
+  const hl = S.cx.hl ? esc(S.cx.hl) : null;
+  const body = d.parts.map(p => {
+    let text = mark(p.text);
+    if (hl && !found) {
+      const i = text.indexOf(hl), j = i < 0 ? text.indexOf(hl.slice(0, 60)) : -1;
+      const at = i >= 0 ? i : j, len = i >= 0 ? hl.length : 60;
+      if (at >= 0) { text = text.slice(0, at) + `<mark class="ev-hl" id="anchor">${text.slice(at, at + len)}</mark>` + text.slice(at + len); found = true; }
+    }
+    if (secRx && !found) {
+      // the heading itself starts at column 0; indented matches are table-of-contents lines
+      const lines = text.split('\n'), hits = lines.map((l, i) => secRx.test(l) ? i : -1).filter(i => i >= 0);
+      const at = hits.find(i => !/^\s/.test(lines[i])) ?? hits[hits.length - 1];
+      if (at != null) { lines[at] = `<span class="secline" id="anchor">${lines[at]}</span>`; found = true; text = lines.join('\n'); }
+    }
+    const isAnchor = (anchorIsPart && p.id === d.anchor) || (S.cx.hl && p.id && p.id === d.anchor);
+    return `<div class="part ${isAnchor ? 'anchor' : ''}" ${isAnchor ? 'id="anchor"' : ''}>${p.heading ? `<h3>${esc(p.heading)}</h3>` : ''}
+      ${p.id ? `<div class="pid">${esc(p.id)}</div>` : ''}${p.code || p.text.length > 20000 ? `<pre class="code">${text}</pre>` : `<div class="tx">${text}</div>`}</div>`;
+  }).join('');
+  const unit = esc(S.cx.stats?.unit || 'document');
+  return `<div class="panel"><h2 style="font-size:20px">${esc(d.title)}</h2>
+    <p class="sub mono" style="margin-bottom:8px">${esc(d.id)} · ${d.words.toLocaleString()} words · ${d.parts.length} part(s)${d.anchor ? ` · showing <b>${esc(d.anchor)}</b>` : ''}</p>
+    <div class="kv" style="margin-bottom:10px">${meta.map(([k, v]) => `<div><span>${esc(k)}</span><b>${k === 'url' ? `<a href="${esc(v)}" target="_blank" rel="noopener">link</a>` : esc(v)}</b></div>`).join('')}</div>
+    ${d.questions.length ? `<details ${d.questions.length <= 6 ? 'open' : ''}><summary>${d.questions.length} test question(s) need this ${unit}</summary>
+      ${d.questions.map(q => `<div class="qi" data-askq="${esc(q.id)}"><div class="meta"><span>${esc(q.id)}</span><span>${esc(q.type || '')}</span><span class="mk">ask →</span></div>${esc(q.question)}</div>`).join('')}</details>`
+      : `<p class="note" style="margin-top:0">No test question has this ${unit} as gold evidence (it can still be a distractor).</p>`}
+  </div><div class="panel">${body}</div>`;
+}
+async function viewCorpus() {
+  const c = S.cx;
+  if (!c.stats) {
+    $('view').innerHTML = `${modeSwitch()}<div class="panel"><div class="empty">reading the corpus…</div></div>`; bindModes();
+    try { c.stats = await api(`/api/corpus/${S.track}/stats`); await cxLoad(); }
+    catch (e) { $('view').innerHTML = `<div class="banner bad">${esc(e.message)}</div>`; return; }
+    if (S.view !== 'corpus') return;
+  }
+  const st = c.stats, t = curTrack();
+  const tokens = Math.round(st.words * 1.35 / 1000);
+  if (c.mode === 'questions') return viewQLinks();
+  $('view').innerHTML = `
+    ${modeSwitch()}
+    <div class="lede"><h1>What is in the <span style="color:var(--accent)">${esc(t.name)}</span> corpus?</h1>
+      <p>${esc(st.note || '')} Your pipeline can use everything in <code>data/</code>: ${st.files.map(f => `<code>${esc(f)}</code>`).join(', ')}.</p></div>
+    <div class="panel"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;align-items:start">
+      <div><div class="kv" style="flex-direction:column;gap:6px">
+        <div><span>${esc(st.unit)}s</span><b>${st.n.toLocaleString()}</b></div>
+        <div><span>passages / parts</span><b>${st.passages.toLocaleString()}</b></div>
+        <div><span>words in total</span><b>${st.words.toLocaleString()}</b> <span>(≈ ${tokens.toLocaleString()}k tokens)</span></div>
+        <div><span>median ${esc(st.unit)}</span><b>${st.median_words.toLocaleString()} words</b></div>
+        <div><span>longest</span><b>${st.max_words.toLocaleString()} words</b></div>
+        <div><span>needed by test questions</span><b>${st.referenced} of ${st.n}</b></div></div>
+        <p class="note">The whole corpus is ≈ ${tokens.toLocaleString()}k tokens, ${tokens > 900 ? 'more than fits into one prompt: hence retrieval.' : 'which would almost fit into one long prompt. Would that beat retrieval? At what cost per question?'}</p></div>
+      <div>${histogram(st.histogram)}</div></div>
+      ${Object.entries(st.facets).map(([f, vals]) => `<div class="facet"><span class="fn">${esc(f)}</span><div>${vals.map(([v, n]) =>
+        `<span class="chip ${c.facets[f] === v ? 'on' : ''}" data-facet="${esc(f)}" data-val="${esc(v)}">${esc(v)}<b>${n}</b></span>`).join('')}</div></div>`).join('')}
+    </div>
+    <div class="grid2">
+      <div class="panel"><h2>Browse</h2>
+        <div style="display:flex;gap:8px;margin:8px 0"><input class="wide" id="cxq" placeholder="search words (whole words, all must match)" value="${esc(c.q)}">
+          <select id="cxsort" style="padding:5px 8px;background:var(--ink);border:1px solid var(--rule);border-radius:3px">
+            ${[['', c.q ? 'best match' : 'file order'], ['questions', 'most questions'], ['longest', 'longest'], ['shortest', 'shortest']].map(([v, l]) => `<option value="${v}" ${c.sort === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+        <p class="sub" style="margin:0 0 8px">${c.total.toLocaleString()} ${esc(st.unit)}(s)${Object.keys(c.facets).length ? ' · ' + Object.entries(c.facets).map(([k, v]) => `${esc(k)} = ${esc(v)}`).join(', ') + ' · <a href="#" id="cxclear">clear</a>' : ''}</p>
+        <div class="dl">${c.docs.map(d => `<div class="di ${c.doc?.id === d.id ? 'on' : ''}" data-cx="${esc(d.id)}"><div class="t">${mark(d.title)}</div>
+          <div class="m"><span>${esc(d.id)}</span><span>${d.words.toLocaleString()} words</span>${d.questions ? `<span>${d.questions} question(s)</span>` : ''}
+            ${Object.entries(d.meta).filter(([k, v]) => v != null && v !== '' && !['paragraphs', 'sections', 'number', 'path', 'month', 'has tldr examples'].includes(k)).slice(0, 3).map(([, v]) => `<span>${esc(String(v).slice(0, 40))}</span>`).join('')}</div>
+          <div class="s">${mark(d.snippet)}</div></div>`).join('') || '<div class="empty">nothing matches</div>'}
+          ${c.docs.length < c.total ? `<div style="padding:10px;text-align:center"><button class="btn quiet" id="cxmore">show more</button></div>` : ''}</div>
+      </div>
+      <div>${c.docError ? `<div class="banner bad">${esc(c.docError)}</div>` : c.doc ? docHtml(c.doc) : `<div class="panel"><div class="empty">pick a ${esc(st.unit)} on the left</div></div>`}</div>
+    </div>`;
+  let timer;
+  $('cxq').oninput = e => { clearTimeout(timer); timer = setTimeout(async () => { c.q = e.target.value; await cxLoad(); const pos = e.target.selectionStart; viewCorpus(); $('cxq').focus(); $('cxq').setSelectionRange(pos, pos); }, 250); };
+  $('cxsort').onchange = async e => { c.sort = e.target.value; await cxLoad(); viewCorpus(); };
+  if ($('cxmore')) $('cxmore').onclick = async () => { await cxLoad(true); viewCorpus(); };
+  if ($('cxclear')) $('cxclear').onclick = async e => { e.preventDefault(); c.facets = {}; await cxLoad(); viewCorpus(); };
+  document.querySelectorAll('[data-facet]').forEach(ch => ch.onclick = async () => {
+    const f = ch.dataset.facet; if (c.facets[f] === ch.dataset.val) delete c.facets[f]; else c.facets[f] = ch.dataset.val;
+    await cxLoad(); viewCorpus();
+  });
+  document.querySelectorAll('[data-cx]').forEach(el => el.onclick = () => openDoc(el.dataset.cx, true));
+  bindModes();
+  document.querySelectorAll('[data-askq]').forEach(el => el.onclick = () => { if (S.info.public) return; go('ask'); askQ(el.dataset.askq); });
+  const a = document.getElementById('anchor'); if (a) a.scrollIntoView({ block: 'center' });
+}
+
+// ── 02b questions and how they link to documents ──────────────────────────────────────────────────
+const CORPUS_ICON = { papers: 'documents', technews: 'documents', rfc: 'index', shell: 'split', codesearch: 'inverted' };
+let overview = null;
+function corpusPicker() {
+  if (!overview) { api('/api/corpus-overview').then(o => { overview = o; if (S.view === 'corpus') viewCorpus(); }).catch(() => {}); }
+  const rows = overview || S.info.tracks.map(t => ({ track: t.name, title: t.title, questions: t.n }));
+  return `<div class="cpick">${rows.map(o => `<button data-pick-track="${esc(o.track)}" class="${o.track === S.track ? 'on' : ''}">
+    <svg><use href="#i-${CORPUS_ICON[o.track] || 'documents'}"/></svg><div><div class="nm">${esc(o.track)}</div>
+    <div class="ti">${esc(o.title)}</div>
+    <div class="st">${o.n != null ? `${o.n.toLocaleString()} ${esc(o.unit)}s · ${Math.round(o.words / 1000).toLocaleString()}k words · ` : ''}${o.questions} test q</div></div></button>`).join('')}</div>`;
+}
+function modeSwitch() {
+  return corpusPicker() + `<div class="modes"><button data-mode="docs" class="${S.cx.mode === 'docs' ? 'on' : ''}">Documents</button>
+    <button data-mode="questions" class="${S.cx.mode === 'questions' ? 'on' : ''}">Test questions &amp; their evidence</button></div>`;
+}
+function bindModes() {
+  document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { S.cx.mode = b.dataset.mode; viewCorpus(); });
+  document.querySelectorAll('[data-pick-track]').forEach(b => b.onclick = () => { if (b.dataset.pickTrack !== S.track) switchTrack(b.dataset.pickTrack); });
+}
+const trunc = (x, n) => { x = String(x ?? ''); return x.length > n ? x.slice(0, n - 1) + '…' : x; };
+
+function linkMap(qd, sel) {
+  // questions (left, grouped by type) — documents (right, in order of first use) — one curve per link
+  const types = [...new Set(qd.questions.map(q => q.type || 'all'))];
+  const qs = types.flatMap(t => qd.questions.filter(q => (q.type || 'all') === t));
+  const docOrder = [], seen = new Set();
+  qs.forEach(q => q.docs.forEach(d => { if (!seen.has(d)) { seen.add(d); docOrder.push(d); } }));
+  const n = Math.max(qs.length, docOrder.length, 1);
+  const row = Math.max(3, Math.min(9, 760 / n)), top = 30, H = top + n * row + 20, W = 980, qx = 200, dx = W - 200;
+  const qy = {}, dy = {};
+  const qGap = (n * row - qs.length * row) / 2, dGap = (n * row - docOrder.length * row) / 2;
+  qs.forEach((q, i) => qy[q.id] = top + qGap + i * row + row / 2);
+  docOrder.forEach((d, i) => dy[d] = top + dGap + i * row + row / 2);
+  const selQ = qs.find(q => q.id === sel);
+  const lines = qs.flatMap(q => q.docs.map(d => `<path class="ln ${q.id === sel ? 'sel' : ''}" d="M${qx} ${qy[q.id]} C ${(qx + dx) / 2} ${qy[q.id]}, ${(qx + dx) / 2} ${dy[d]}, ${dx} ${dy[d]}"/>`));
+  const groups = types.map(t => { const ys = qs.filter(q => (q.type || 'all') === t).map(q => qy[q.id]);
+    return `<text class="grp" x="${qx - 14}" y="${(Math.min(...ys) + Math.max(...ys)) / 2 + 6}" text-anchor="end">${esc(t)} (${ys.length})</text>
+      <path d="M${qx - 8} ${Math.min(...ys)}V${Math.max(...ys)}" stroke="var(--rule)" stroke-width="2"/>`; });
+  const r = Math.max(1.6, Math.min(4, row / 2.2));
+  return `<svg class="linkmap" viewBox="0 0 ${W} ${H}" role="img" aria-label="test questions linked to the documents they need">
+    <text x="${qx}" y="16" text-anchor="middle">test questions</text><text x="${dx}" y="16" text-anchor="middle">${esc(qd.unit)}s with the evidence</text>
+    ${groups.join('')}
+    ${lines.filter(l => !l.includes('sel')).join('')}${lines.filter(l => l.includes('sel')).join('')}
+    ${qs.map(q => `<circle class="qn ${q.id === sel ? 'sel' : ''}" data-lq="${esc(q.id)}" cx="${qx}" cy="${qy[q.id]}" r="${q.id === sel ? r + 2 : r}"><title>${esc(q.question)}</title></circle>`).join('')}
+    ${docOrder.map(d => { const on = selQ && selQ.docs.includes(d), k = qd.docs[d]?.n || 1;
+      return `<circle class="dn ${on ? 'sel' : ''}" data-ld="${esc(d)}" cx="${dx}" cy="${dy[d]}" r="${Math.min(r + Math.sqrt(k), 9)}"><title>${esc(d)}: ${esc(qd.docs[d]?.title)} (${k} question(s))</title></circle>
+        ${on ? `<text class="sl" x="${dx + 14}" y="${dy[d] + 4}">${esc(trunc(qd.docs[d]?.title, 34))}</text>` : ''}`; }).join('')}
+    ${selQ ? `<text class="sl" x="${qx - 14}" y="${qy[selQ.id] + 4}" text-anchor="end" style="fill:var(--accent)">${esc(trunc(selQ.question, 30))}</text>` : ''}
+  </svg>`;
+}
+
+function neighbourhood(d) {
+  // question → documents it needs → other test questions that need the same documents
+  const W = 980, ev = d.evidence, x1 = 70, x2 = 330, x3 = 690;
+  const rows = ev.map(e => Math.max(1, Math.min(e.others.length, 5)) + (e.others.length > 5 ? 1 : 0));
+  const rowH = 26, gap = 22;
+  let y = 30; const ys = [];
+  rows.forEach((n, i) => { ys.push({ y, h: n * rowH }); y += n * rowH + gap; });
+  const H = Math.max(y, 150), qy = H / 2;
+  return `<svg class="ngraph" viewBox="0 0 ${W} ${H}" role="img" aria-label="the question, the documents it needs and other questions using them">
+    ${ARROW}
+    <use href="#i-query" x="${x1 - 26}" y="${qy - 26}" width="52" height="52"/><text class="hand" x="${x1}" y="${qy + 46}" text-anchor="middle">this question</text>
+    ${ev.map((e, i) => { const cy = ys[i].y + ys[i].h / 2;
+      return `<path class="wire" d="M${x1 + 30} ${qy} C ${x1 + 130} ${qy}, ${x2 - 150} ${cy}, ${x2 - 36} ${cy}" marker-end="url(#arr)"/>
+      <g class="click" data-gd="${esc(e.doc)}"><use href="#i-documents" x="${x2 - 26}" y="${cy - 24}" width="48" height="48" style="color:${e.role === 'gold' ? 'var(--paper)' : 'var(--faint)'}"/>
+        <text x="${x2 + 30}" y="${cy - 3}">${esc(trunc(e.title, 34))}</text><text class="small" x="${x2 + 30}" y="${cy + 14}">${esc(e.doc)} · ${e.role === 'gold' ? `${e.passages.length || 'no'} passage(s)` : esc(trunc(e.role, 30))}</text></g>
+      ${e.others.slice(0, 5).map((o, j) => { const oy = ys[i].y + j * rowH + rowH / 2;
+        return `<path class="wire thin" d="M${x2 + 300} ${cy} C ${x3 - 40} ${cy}, ${x3 - 60} ${oy}, ${x3 - 8} ${oy}"/>
+          <g class="click" data-gq="${esc(o.id)}"><circle cx="${x3}" cy="${oy}" r="4" fill="var(--paper)"/><text class="small" x="${x3 + 12}" y="${oy + 4}">${esc(trunc(o.question, 46))}</text></g>`; }).join('')}
+      ${e.others.length > 5 ? `<text class="small" x="${x3 + 12}" y="${ys[i].y + 5 * rowH + 17}">+ ${e.others.length - 5} more question(s)</text>` : ''}
+      ${!e.others.length ? `<text class="small" x="${x3}" y="${cy + 4}">no other test question uses it</text>` : ''}`; }).join('')}
+    ${!ev.length ? `<text class="hand" x="${x2}" y="${qy + 6}">no evidence documents: the answer is not in the corpus</text>` : ''}
+  </svg>`;
+}
+
+async function viewQLinks() {
+  const c = S.cx, t = curTrack();
+  if (!c.qdata) {
+    $('view').innerHTML = `${modeSwitch()}<div class="panel"><div class="empty">linking questions to documents…</div></div>`; bindModes();
+    c.qdata = await api(`/api/corpus/${S.track}/questions`);
+    if (c.mode !== 'questions' || S.view !== 'corpus') return;
+  }
+  const qd = c.qdata;
+  const hops = {}; qd.questions.forEach(q => hops[q.docs.length] = (hops[q.docs.length] || 0) + 1);
+  const hubs = Object.entries(qd.docs).sort((a, b) => b[1].n - a[1].n).slice(0, 5);
+  const s = c.qSearch.toLowerCase();
+  const list = qd.questions.filter(q => (!c.qType || q.type === c.qType) && (!s || q.question.toLowerCase().includes(s) || q.id.includes(s)));
+  const d = c.qdetail;
+  $('view').innerHTML = `
+    ${modeSwitch()}
+    <div class="lede"><h1>Which ${esc(qd.unit)}s does each test question need?</h1>
+      <p>Every line links a test question to a ${esc(qd.unit)} that holds (part of) its answer. Click a dot. Questions with several lines are multi-hop: the pipeline has to find all of them.</p></div>
+    <div class="panel"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
+      <div><div class="lbl">${esc(qd.unit)}s needed per question</div>
+        ${Object.entries(hops).sort((a, b) => a[0] - b[0]).map(([k, v]) => `<div class="bar" style="display:grid;grid-template-columns:110px 1fr 40px;gap:8px;align-items:center;font-size:13.5px;margin:3px 0">
+          <span>${k === '0' ? 'none (unanswerable)' : `${k} ${esc(qd.unit)}${k === '1' ? '' : 's'}`}</span>
+          <span style="background:var(--ink);height:14px;border-radius:2px"><i style="display:block;height:100%;width:${v / qd.questions.length * 100}%;background:var(--paper);border-radius:2px"></i></span><span class="mono">${v}</span></div>`).join('')}</div>
+      <div><div class="lbl">most-needed ${esc(qd.unit)}s</div>
+        ${hubs.map(([id, x]) => `<div style="font-size:13.5px;margin:3px 0;cursor:pointer" data-ld="${esc(id)}"><span class="mono">${x.n}×</span> ${esc(trunc(x.title, 60))}</div>`).join('')}</div>
+      <div><div class="lbl">coverage</div><div class="kv" style="flex-direction:column;gap:4px;margin-top:4px">
+        <div><span>test questions</span><b>${qd.questions.length}</b></div>
+        <div><span>${esc(qd.unit)}s needed</span><b>${Object.keys(qd.docs).length} of ${c.stats.n}</b></div>
+        <div><span>never needed (distractors)</span><b>${c.stats.n - Object.keys(qd.docs).length}</b></div></div></div>
+    </div>
+    <details id="lmap" ${c.mapOpen !== false ? 'open' : ''} style="margin-top:12px"><summary>link map: all ${qd.questions.length} questions and their ${esc(qd.unit)}s</summary>${linkMap(qd, c.qsel)}</details></div>
+    <div class="grid2">
+      <div class="panel"><h2>Test questions</h2>
+        <div style="margin:6px 0"><span class="chip ${!c.qType ? 'on' : ''}" data-qt="">all</span>${Object.entries(t.types).map(([k, n]) =>
+          `<span class="chip ${c.qType === k ? 'on' : ''}" data-qt="${esc(k)}">${esc(k)} ${n}</span>`).join('')}</div>
+        <input class="wide" id="lqs" placeholder="filter by text or id" value="${esc(c.qSearch)}" style="margin-bottom:8px">
+        <div class="qlist">${list.map(q => `<div class="qi ${q.id === c.qsel ? 'on' : ''}" data-lq="${esc(q.id)}">
+          <div class="meta"><span>${esc(q.id)}</span><span>${esc(q.type || '')}</span><span class="mk">${q.docs.length} ${esc(qd.unit)}${q.docs.length === 1 ? '' : 's'}</span></div>${esc(q.question)}</div>`).join('')}</div>
+      </div>
+      <div>${d ? qDetailHtml(d) : `<div class="panel"><div class="empty">pick a question to see its evidence</div></div>`}</div>
+    </div>`;
+  bindModes();
+  document.querySelectorAll('[data-qt]').forEach(ch => ch.onclick = () => { c.qType = ch.dataset.qt || null; viewQLinks(); });
+  $('lqs').oninput = e => { c.qSearch = e.target.value; const pos = e.target.selectionStart; viewQLinks(); $('lqs').focus(); $('lqs').setSelectionRange(pos, pos); };
+  document.querySelectorAll('[data-lq],[data-gq]').forEach(el => el.onclick = () => selectQ(el.dataset.lq || el.dataset.gq, el.tagName !== 'circle'));
+  $('lmap').ontoggle = e => { c.mapOpen = e.target.open; };
+  document.querySelectorAll('[data-ld],[data-gd]').forEach(el => el.onclick = () => openDoc(el.dataset.ld || el.dataset.gd));
+  document.querySelectorAll('[data-psg]').forEach(el => el.onclick = () => openDoc(el.dataset.psg, false, el.dataset.hl || null));
+  document.querySelectorAll('[data-askq]').forEach(el => el.onclick = () => { if (S.info.public) return; go('ask'); askQ(el.dataset.askq); });
+  const on = document.querySelector('.qlist .qi.on');  // scroll the list, not the page
+  if (on) on.parentElement.scrollTop = on.offsetTop - on.parentElement.offsetTop - 60;
+}
+async function selectQ(id, scroll = true) {
+  S.cx.qsel = id;
+  try { S.cx.qdetail = await api(`/api/corpus/${S.track}/question?id=${encodeURIComponent(id)}`); } catch (e) { S.cx.qdetail = null; }
+  await viewQLinks();
+  const det = document.getElementById('qdetail'); if (det && scroll) det.scrollIntoView({ block: 'start', behavior: 'smooth' });
+}
+// where a passage lives: RFC sections are "rfc9113#3.3"; paragraph ids (papers, man pages) resolve by themselves
+const psgTarget = (e, p) => !p.anchor ? e.doc : p.section ? `${e.doc}#${p.anchor}` : p.anchor;
+function qDetailHtml(d) {
+  const q = d.question, ga = Array.isArray(q.gold_answer) ? q.gold_answer.join('  |  ') : q.gold_answer;
+  return `<div class="panel" id="qdetail"><div class="meta mono" style="font-size:12px;color:var(--mute)">${esc(q.id)} · ${esc(q.type || '')}</div>
+      <h2 style="font-size:19px;margin:4px 0 10px">${esc(q.question)}</h2>
+      <div class="verdict"><div class="k">expected answer</div><div class="ans">${esc(ga)}</div></div>
+      ${S.info.public ? '' : `<button class="btn quiet" data-askq="${esc(q.id)}" style="margin-top:10px">ask the pipeline this question →</button>`}</div>
+    <div class="panel"><h2>How it is linked</h2><p class="sub">The question, the ${esc(d.unit)}s that hold the answer, and other test questions that need the same ${esc(d.unit)}s. Click any node.</p>${neighbourhood(d)}</div>
+    <div class="panel"><h2>The evidence</h2><p class="sub">What a perfect retriever would find. Click a passage to open it in the ${esc(d.unit)}.</p>
+      ${d.evidence.map(e => `<div class="ev"><div class="h"><b data-gd="${esc(e.doc)}">${esc(e.title)}</b><span class="tag ${e.role === 'gold' ? 'good' : ''}">${esc(e.role)}</span>
+          <span class="mono" style="font-size:12px;color:var(--mute)">${esc(e.doc)} · ${e.words.toLocaleString()} words${Object.entries(e.meta).filter(([k, v]) => v && ['source', 'published', 'status', 'repo', 'path'].includes(k)).map(([, v]) => ' · ' + esc(v)).join('')}</span></div>
+        ${e.passages.map(p => p.quote ? `<div class="quote psg" style="border-left-color:var(--accent)" data-psg="${esc(e.doc)}" data-hl="${esc(p.text)}">“${esc(p.text)}”</div>`
+          : p.text ? `<div class="psg" data-psg="${esc(psgTarget(e, p))}"><span class="pid mono" style="font-size:11px;color:var(--faint)">${esc(p.label)}</span>\n${esc(trunc(p.text, 700))}</div>`
+          : `<div class="psg" data-psg="${esc(psgTarget(e, p))}">${esc(p.label)} <span class="note">(open section)</span></div>`).join('')}
+        ${!e.passages.length ? `<div class="note" style="margin:4px 0 0">${e.role === 'gold' ? `The whole ${esc(d.unit)} is the answer.` : ''} <a href="#" data-gd="${esc(e.doc)}">open it</a></div>` : ''}
+      </div>`).join('') || '<p class="note">This question has no evidence in the corpus: the correct answer is to abstain.</p>'}
+    </div>`;
+}
+
+// ── 04 test run ─────────────────────────────────────────────────────────────────────────────────
+async function loadRuns() { if (S.info.public) return; try { S.runs = await api(`/api/runs?track=${S.track}`); } catch { S.runs = []; } if (S.view === 'compare' || S.view === 'run') render(); }
+
+function perQuestionCost() {
+  // the most recent studio run of this pipeline tells us what one question costs
+  const lbl = pipeLabel();
+  const r = S.runs.find(r => r.source === 'studio' && r.label === lbl && r.totals && r.n);
+  if (r) return { usd: r.totals.usd_uncached / r.n, from: `your run ${r.id}` };
+  if (S.ask?.cost?.priced && S.ask.cost.calls) return { usd: S.ask.cost.usd_uncached || S.ask.cost.usd, from: 'your last question' };
+  return null;
+}
+function viewRun() {
+  const t = curTrack();
+  const ready = S.load?.status === 'ready';
+  const lim = store.get('limit', 20), types = store.get('types:' + S.track, []);
+  const n = Math.min(lim || t.n, Object.entries(t.types).filter(([k]) => !types.length || types.includes(k)).reduce((a, [, v]) => a + v, 0));
+  const pq = perQuestionCost();
+  const job = S.job && S.job.track === S.track ? S.job : null;
+  $('view').innerHTML = `
+    <div class="lede"><h1>Run <span style="color:var(--accent)">${esc(pipeLabel())}</span> on the test set</h1>
+      <p>Same scoring as the server, on the public questions. Start small: 20 questions tell you a lot and cost little.</p></div>
+    <div class="panel">
+      <div class="knobs">
+        <label class="knob">questions <input type="number" id="lim" min="1" max="${t.n}" value="${lim || ''}" placeholder="all"></label>
+        <label class="knob">parallel <input type="number" id="wrk" min="1" max="8" value="${store.get('workers', 4)}"></label>
+        <label class="knob">label <input type="text" id="lbl" placeholder="${esc(pipeLabel())}"></label>
+      </div>
+      <div style="margin-bottom:10px">${Object.entries(t.types).map(([k, v]) => `<span class="chip ${types.includes(k) ? 'on' : ''}" data-ty="${esc(k)}">${esc(k)} ${v}</span>`).join('')}
+        <span class="note">${types.length ? '' : '(all types)'}</span></div>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="go" ${ready && !(job && job.status === 'running') ? '' : 'disabled'}>Run ${n} questions</button>
+        <span class="note" style="margin:0">${pq ? `≈ ${usd(pq.usd * n)} with ${esc(S.info.model)} (from ${esc(pq.from)}; cached answers are free)`
+          : 'Cost unknown yet: ask one question first to measure it.'}</span>
+      </div>
+      ${job ? `<div class="progress"><i style="width:${job.total ? job.done / job.total * 100 : 0}%"></i></div>
+        <div class="kv"><div><span>${esc(job.status)}</span><b>${job.done} / ${job.total}</b></div><div><span>spent</span><b>${usd(job.cost)}</b></div>
+          ${job.status === 'running' ? `<button class="btn quiet" id="stop">stop</button>` : ''}</div>
+        ${job.error ? `<pre>${esc(job.error)}</pre>` : ''}` : ''}
+    </div>
+    <div id="runDetail">${S.runDetail ? runDetailHtml(S.runDetail) : ''}</div>`;
+  document.querySelectorAll('[data-ty]').forEach(c => c.onclick = () => {
+    const k = c.dataset.ty, cur = store.get('types:' + S.track, []);
+    store.set('types:' + S.track, cur.includes(k) ? cur.filter(x => x !== k) : [...cur, k]); viewRun();
+  });
+  $('lim').onchange = e => { store.set('limit', +e.target.value || null); viewRun(); };
+  $('wrk').onchange = e => store.set('workers', Math.max(1, Math.min(8, +e.target.value || 4)));
+  $('go').onclick = () => startRun(n, pq);
+  if ($('stop')) $('stop').onclick = () => api(`/api/jobs/${job.id}/cancel`, {});
+  bindRunDetail();
+}
+async function startRun(n, pq) {
+  if (pq && pq.usd * n > 1 && !window.confirm(`This run will cost about ${usd(pq.usd * n)}. Continue?`)) return;
+  try {
+    S.job = await api('/api/runs', { track: S.track, path: curPipe(), label: $('lbl').value.trim(), limit: store.get('limit', 20),
+      types: store.get('types:' + S.track, []), workers: store.get('workers', 4) });
+  } catch (e) { alert(e.message); return; }
+  let spentBefore = 0;
+  const tick = async () => {
+    S.job = await api(`/api/jobs/${S.job.id}`);
+    S.session += S.job.cost - spentBefore; spentBefore = S.job.cost; refreshSpend();
+    if (S.job.status === 'running' || S.job.status === 'scoring') { if (S.view === 'run') viewRun(); setTimeout(tick, 1000); return; }
+    if (S.job.status !== 'error') { S.runDetail = await api(`/api/runs/${S.job.id}`); }
+    await loadRuns(); if (S.view === 'run') viewRun();
+  };
+  viewRun(); tick();
+}
+
+function runDetailHtml(r) {
+  const prim = r.primary;
+  const types = Object.entries(r.by_type);
+  const rows = r.per_question.filter(x => !S.onlyWrong || (x.scores[prim] ?? 0) < 0.5);
+  const tot = r.totals || {};
+  return `<div class="panel"><h2>${esc(r.label)} <span class="tag">${esc(r.source)}</span> <span class="tag">${esc(r.model || '')}</span></h2>
+      <p class="sub">${r.n} questions${r.cancelled ? ' (stopped early)' : ''}${r.created ? ' · ' + new Date(r.created * 1000).toLocaleString() : ''}</p>
+      ${r.scoring_errors ? `<div class="banner bad">Scoring failed for ${r.scoring_errors} question(s), so these numbers are not valid. ${esc((r.scoring_error_samples || [''])[0]).slice(0, 300)}</div>` : ''}
+      ${r.pipeline_errors ? `<div class="banner bad">${r.pipeline_errors} question(s) raised an exception in your pipeline (they count as wrong).</div>` : ''}
+      <div class="kv" style="margin-bottom:14px">${Object.entries(r.overall).map(([k, v]) => `<div><span>${esc(k)}</span><b style="${k === prim ? 'color:var(--accent)' : ''}">${fmt(v)}</b></div>`).join('')}
+        ${tot.calls != null ? `<div><span>LLM cost</span><b>${usd(tot.usd)}${tot.cached ? ` (${tot.cached} of ${tot.calls} calls cached; ≈ ${usd(tot.usd_uncached)} without cache)` : ''}</b></div>` : ''}
+        <div><span>tokens / question</span><b>${runCost(r)}</b></div></div>
+      <div class="scroll"><table><thead><tr><th>type</th><th>n</th>${Object.keys(r.overall).map(k => `<th>${esc(k)}</th>`).join('')}</tr></thead>
+        <tbody>${types.map(([ty, row]) => `<tr><td>${esc(ty)}</td><td>${row.n}</td>${Object.keys(r.overall).map(k =>
+          `<td>${fmt(row[k])}${k === prim && row[k] != null ? `<span class="cell-bar" style="width:${row[k] * 60}px"></span>` : ''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    </div>
+    <div class="panel"><h2>Every question</h2>
+      <p class="sub">Click a row to see the steps (studio runs only). Read the wrong ones and label why they failed: retrieval? prompt? metric?</p>
+      <label class="knob" style="margin-bottom:8px"><input type="checkbox" id="onlyWrong" ${S.onlyWrong ? 'checked' : ''}> only wrong (${r.per_question.filter(x => (x.scores[prim] ?? 0) < 0.5).length})</label>
+      <div class="scroll"><table><thead><tr><th>id</th><th class="l">type</th><th>${esc(prim)}</th><th class="l">answer</th><th class="l">expected</th><th>gold cited</th></tr></thead><tbody>
+      ${rows.map(x => {
+        const gold = new Set(x.gold_ids || []); const c = x.prediction.citations || [];
+        const hit = gold.size ? c.filter(i => isGold(i, gold)).length + '/' + gold.size : '–';
+        const g = Array.isArray(x.gold_answer) ? x.gold_answer[0] : x.gold_answer;
+        const open = S.openRow === x.id;
+        return `<tr class="click" data-row="${esc(x.id)}"><td class="mono">${esc(x.id.slice(0, 14))}</td><td class="l">${esc(x.type || '')}</td>
+          <td class="${(x.scores[prim] ?? 0) >= 0.5 ? '' : 'best'}">${fmt(x.scores[prim])}</td>
+          <td class="l"><span class="clip">${esc(x.prediction.error ? 'ERROR' : x.prediction.answer)}</span></td><td class="l"><span class="clip">${esc(g)}</span></td><td>${hit}</td></tr>
+          ${open ? `<tr><td colspan="6" style="text-align:left;background:var(--ink)"><h3 style="font-size:15px;margin:6px 0 10px">${esc(x.question)}</h3>
+            ${verdictHtml({ ...x, gold_ids: x.gold_ids, gold_answer: x.gold_answer, id: x.id }, x, prim)}
+            ${x.trace ? traceHtml(x, x) : '<div class="note">Reference results have no step traces. Run it here to get them.</div>'}</td></tr>` : ''}`;
+      }).join('')}</tbody></table></div></div>`;
+}
+function bindRunDetail() {
+  if ($('onlyWrong')) $('onlyWrong').onchange = e => { S.onlyWrong = e.target.checked; render(); };
+  document.querySelectorAll('[data-row]').forEach(tr => tr.onclick = () => { S.openRow = S.openRow === tr.dataset.row ? null : tr.dataset.row; render(); });
+  document.querySelectorAll('.doc .txt').forEach(x => x.onclick = () => x.classList.toggle('open'));
+}
+
+// ── 05 compare ──────────────────────────────────────────────────────────────────────────────────
+function viewCompare() {
+  const t = curTrack();
+  const picked = S.runs.filter(r => S.picked.includes(r.id));
+  $('view').innerHTML = `
+    <div class="lede"><h1>Which change helped, and where?</h1>
+      <p>Pick runs to compare per question type. Differences of a few points on ~20–160 questions are often noise; look at the types that moved.</p></div>
+    <div class="panel flush" style="padding:0"><div class="scroll"><table><thead><tr><th></th><th class="l">run</th><th class="l">source</th><th class="l">model</th><th>n</th>
+      <th>${esc(t.primary)}</th><th>tokens / question</th><th class="l">when</th><th></th></tr></thead><tbody>
+      ${S.runs.map(r => `<tr><td><input type="checkbox" data-pick="${esc(r.id)}" ${S.picked.includes(r.id) ? 'checked' : ''}></td>
+        <td class="l click" data-open="${esc(r.id)}" style="cursor:pointer;text-decoration:underline dotted">${esc(r.label)}</td><td class="l"><span class="tag">${esc(r.source)}</span></td>
+        <td class="l mono" style="font-size:12px">${esc(r.model || '')}</td><td>${r.n}</td><td>${fmt(r.overall[t.primary])}</td>
+        <td>${runCost(r)}</td>
+        <td class="l" style="font-size:12.5px;color:var(--mute)">${r.created ? new Date(r.created * 1000).toLocaleString() : ''}</td>
+        <td>${r.source === 'studio' ? `<button class="btn quiet" data-del="${esc(r.id)}">delete</button>` : ''}</td></tr>`).join('') ||
+        `<tr><td colspan="9"><div class="empty">no runs yet: start one in view 04</div></td></tr>`}</tbody></table></div></div>
+    ${picked.length ? compareTable(picked, t) : ''}
+    <div id="cmpDiff"></div>
+    <div id="runDetail">${S.runDetail && S.view === 'compare' ? runDetailHtml(S.runDetail) : ''}</div>`;
+  document.querySelectorAll('[data-pick]').forEach(c => c.onchange = () => {
+    S.picked = c.checked ? [...S.picked, c.dataset.pick] : S.picked.filter(x => x !== c.dataset.pick); viewCompare();
+  });
+  document.querySelectorAll('[data-open]').forEach(c => c.onclick = async () => { S.runDetail = await api(`/api/runs/${encodeURIComponent(c.dataset.open)}`); S.openRow = null; viewCompare(); });
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { await api(`/api/runs/${b.dataset.del}`, undefined, 'DELETE'); S.picked = S.picked.filter(x => x !== b.dataset.del); loadRuns(); });
+  if (picked.length === 2) diffRuns(picked, t.primary);
+  bindRunDetail();
+}
+function runCost(r) {
+  // tokens per question; for cached studio runs estimate them from the prompt sizes
+  const tot = r.totals, u = r.usage;
+  if (tot && tot.calls) {
+    const n = tot.input_tokens + tot.output_tokens;
+    return n ? Math.round(n / r.n).toLocaleString() : `≈ ${Math.round((tot.tokens_uncached || 0) / Math.max(1, r.n)).toLocaleString()} (cached)`;
+  }
+  if (tot) return 'no LLM';
+  return u ? Math.round((u.input_tokens + u.output_tokens) / Math.max(1, r.n)).toLocaleString() : '–';
+}
+function compareTable(runs, t) {
+  const types = [...new Set(runs.flatMap(r => Object.keys(r.by_type)))];
+  const rowOf = (vals) => { const best = Math.max(...vals.filter(v => v != null)); return vals.map(v => `<td class="${v === best && runs.length > 1 ? 'best' : ''}">${fmt(v)}</td>`).join(''); };
+  return `<div class="panel"><h2>${esc(t.primary)} by question type</h2><div class="scroll"><table>
+    <thead><tr><th>type</th>${runs.map(r => `<th>${esc(r.label)}<br><span style="font-size:11px">${esc(r.source)} · ${r.n} q</span></th>`).join('')}</tr></thead><tbody>
+    <tr><td><b>overall</b></td>${rowOf(runs.map(r => r.overall[t.primary]))}</tr>
+    ${types.map(ty => `<tr><td>${esc(ty)}</td>${rowOf(runs.map(r => r.by_type[ty]?.[t.primary] ?? null))}</tr>`).join('')}
+    </tbody></table></div>
+    ${runs.length === 2 ? '' : '<p class="note">Pick exactly two runs to see which questions one gets right and the other wrong.</p>'}</div>`;
+}
+async function diffRuns(picked, prim) {
+  const [a, b] = await Promise.all(picked.map(r => api(`/api/runs/${encodeURIComponent(r.id)}`)));
+  const bm = Object.fromEntries(b.per_question.map(x => [x.id, x]));
+  const both = a.per_question.filter(x => bm[x.id]);
+  const ok = x => (x.scores[prim] ?? 0) >= 0.5;
+  const fixed = both.filter(x => !ok(x) && ok(bm[x.id])), broke = both.filter(x => ok(x) && !ok(bm[x.id]));
+  const list = (xs, title) => `<h3 style="font-size:15px;margin:14px 0 6px">${title} (${xs.length})</h3>${xs.length ? `<div class="scroll"><table><thead><tr><th>id</th><th class="l">type</th><th class="l">question</th>
+    <th class="l">${esc(a.label)}</th><th class="l">${esc(b.label)}</th></tr></thead><tbody>${xs.map(x => `<tr><td class="mono">${esc(x.id.slice(0, 14))}</td><td class="l">${esc(x.type || '')}</td>
+    <td class="l"><span class="clip">${esc(x.question)}</span></td><td class="l"><span class="clip">${esc(x.prediction.answer)}</span></td>
+    <td class="l"><span class="clip">${esc(bm[x.id].prediction.answer)}</span></td></tr>`).join('')}</tbody></table></div>` : '<p class="note">none</p>'}`;
+  if (!$('cmpDiff')) return;
+  $('cmpDiff').innerHTML = `<div class="panel"><h2>Question by question</h2><p class="sub">${both.length} questions are in both runs.
+    The net change is ${fixed.length - broke.length >= 0 ? '+' : ''}${fixed.length - broke.length}, but look at both lists: a change that fixes 10 and breaks 8 is not the same as one that fixes 2.</p>
+    ${list(fixed, `wrong in ${esc(a.label)}, right in ${esc(b.label)}`)}${list(broke, `right in ${esc(a.label)}, wrong in ${esc(b.label)}`)}</div>`;
+}
+
+// ── start here: START_HERE.md ──────────────────────────────────────────────────────────────────
+let guideMd = null;
+async function viewStart() {
+  if (guideMd === null) {
+    try { guideMd = (await api('/api/guide')).markdown; } catch (e) { guideMd = `# Start here\n\n${e.message}`; }
+  }
+  if (S.view !== 'start') return;
+  // the commands in the guide use the papers track: show them for the track picked in Studio
+  const md = guideMd.replace(/(```[\s\S]*?```)/g, block => block.replace(/--track papers\b/g, `--track ${S.track}`)
+    .replace(/tracks\/papers\//g, `tracks/${S.track}/`));
+  $('view').innerHTML = `<div class="panel guide">${mdToHtml(md)}
+    <p class="note">This is <code>START_HERE.md</code>. Commands are shown for the track picked at the bottom left (<b>${esc(S.track)}</b>);
+    the example outputs are from the papers track.</p></div>`;
+}
+
+// A small Markdown renderer for the guide: headings, paragraphs, lists, code blocks, tables, inline code,
+// bold, italics and links.
+function mdInline(s) {
+  const codes = [];
+  s = s.replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return `\u0000${codes.length - 1}\u0000`; });
+  s = esc(s)
+    .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+    .replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, '$1<i>$2</i>')
+    .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '$1');  // links to files in the repo: just the text
+  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[+i])}</code>`);
+}
+function mdToHtml(src) {
+  const L = src.split('\n'), out = [];
+  const isFence = l => /^\s*```/.test(l), isItem = l => /^(\s*)([-*]|\d+\.) /.test(l);
+  const isBlock = l => isFence(l) || /^#{1,4} /.test(l) || /^\|/.test(l) || isItem(l);
+  let i = 0;
+  while (i < L.length) {
+    const l = L[i];
+    if (isFence(l)) {
+      const ind = l.match(/^\s*/)[0].length, code = [];
+      for (i++; i < L.length && !isFence(L[i]); i++) code.push(L[i].slice(Math.min(ind, L[i].match(/^\s*/)[0].length)));
+      i++; out.push(`<pre class="code">${esc(code.join('\n'))}</pre>`);
+    } else if (/^#{1,4} /.test(l)) {
+      const n = l.match(/^#+/)[0].length; out.push(`<h${n}>${mdInline(l.slice(n + 1))}</h${n}>`); i++;
+    } else if (/^\|/.test(l)) {
+      const rows = [];
+      for (; i < L.length && /^\|/.test(L[i]); i++) rows.push(L[i].replace(/^\||\|\s*$/g, '').split('|').map(c => c.trim()));
+      const body = rows.slice(2).map(r => `<tr>${r.map(c => `<td class="l">${mdInline(c)}</td>`).join('')}</tr>`).join('');
+      out.push(`<div class="wrap"><table><tr>${rows[0].map(c => `<th class="l">${mdInline(c)}</th>`).join('')}</tr>${body}</table></div>`);
+    } else if (isItem(l)) {
+      // an item is a list of parts: paragraphs (arrays of lines) and code blocks indented under the item
+      const ordered = /^\s*\d+\./.test(l), start = ordered ? parseInt(l.trim()) : 1, items = [];
+      const part = () => { const it = items[items.length - 1]; return it[it.length - 1]; };
+      while (i < L.length) {
+        if (isItem(L[i])) { items.push([[L[i].replace(/^\s*([-*]|\d+\.) /, '')]]); i++; }
+        else if (/^\s+```/.test(L[i])) {
+          const ind = L[i].match(/^\s*/)[0].length, code = [];
+          for (i++; i < L.length && !isFence(L[i]); i++) code.push(L[i].slice(Math.min(ind, L[i].match(/^\s*/)[0].length)));
+          i++; items[items.length - 1].push({ code: code.join('\n') }, []);
+        }
+        else if (L[i].trim() && /^\s+/.test(L[i])) { (Array.isArray(part()) ? part() : items[items.length - 1][items[items.length - 1].push([]) - 1]).push(L[i].trim()); i++; }
+        else if (!L[i].trim()) {
+          let j = i; while (j < L.length && !L[j].trim()) j++;
+          if (j < L.length && (isItem(L[j]) || /^\s+/.test(L[j]))) {
+            if (!isItem(L[j]) && Array.isArray(part()) && part().length) items[items.length - 1].push([]);
+            i = j; continue;
+          }
+          break;
+        } else break;
+      }
+      const li = items.map(parts => `<li>${parts.map(x => Array.isArray(x)
+        ? (x.length ? `<p>${mdInline(x.join(' '))}</p>` : '') : `<pre class="code">${esc(x.code)}</pre>`).join('')}</li>`).join('');
+      out.push(ordered ? `<ol start="${start}">${li}</ol>` : `<ul>${li}</ul>`);
+    } else if (!l.trim()) i++;
+    else {
+      const para = [];
+      for (; i < L.length && L[i].trim() && !isBlock(L[i]); i++) para.push(L[i]);
+      out.push(`<p>${mdInline(para.join(' '))}</p>`);
+    }
+  }
+  return out.join('\n');
+}
+
+// ── main ────────────────────────────────────────────────────────────────────────────────────────
+function render() {
+  if (S.view === 'start') viewStart();
+  else if (S.view === 'pipeline') viewPipeline();
+  else if (S.view === 'ask') viewAsk();
+  else if (S.view === 'corpus') viewCorpus();
+  else if (S.view === 'run') viewRun();
+  else viewCompare();
+  document.querySelectorAll('.doc .txt').forEach(x => x.onclick = () => x.classList.toggle('open'));
+}
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-doc]');
+  if (el) { e.stopPropagation(); openDoc(el.dataset.doc); }
+}, true);
+document.addEventListener('keydown', e => {
+  if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (e.key >= '1' && e.key <= '5') go(VIEWS[+e.key - 1].id);
+  if (S.view === 'ask' && (e.key === 'j' || e.key === 'k')) {
+    const qs = filteredQs(), i = qs.findIndex(q => q.id === S.qid);
+    const next = qs[Math.max(0, Math.min(qs.length - 1, i + (e.key === 'j' ? 1 : -1)))];
+    if (next) askQ(next.id);
+  }
+});
+
+(async () => {
+  try { S.info = await api('/api/info'); } catch (e) { $('view').innerHTML = `<div class="banner bad">${esc(e.message)}</div>`; return; }
+  if (!S.info.tracks.length) { $('view').innerHTML = '<div class="banner bad">No tracks with a test set found.</div>'; return; }
+  if (!S.info.tracks.some(t => t.name === S.track)) S.track = S.info.tracks[0].name;
+  for (const t of S.info.tracks) if (!t.pipelines.some(p => p.path === S.pipe[t.name])) S.pipe[t.name] = t.pipelines[0].path;
+  if (!views().some(v => v.id === S.view)) S.view = 'start';
+  await switchTrack(S.track);
+  rail(); render();
+  if (!S.info.has_key && !S.info.public) document.querySelector('main').insertAdjacentHTML('afterbegin',
+    '<div class="banner bad">No API key found (OPENAI_API_KEY or ANTHROPIC_API_KEY in .env). Pipelines that call an LLM will fail; retrieval-only tracks like codesearch still work.</div>');
+})();
+</script>
+</body>
+</html>

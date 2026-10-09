@@ -1,0 +1,1064 @@
+[
+ {
+  "id": "rfc2616",
+  "number": 2616,
+  "title": "Hypertext Transfer Protocol -- HTTP/1.1",
+  "date": "June 1999",
+  "year": 1999,
+  "status": "DRAFT STANDARD",
+  "obsoletes": [
+   "rfc2068"
+  ],
+  "obsoleted_by": [
+   "rfc7230",
+   "rfc7231",
+   "rfc7232",
+   "rfc7233",
+   "rfc7234",
+   "rfc7235"
+  ],
+  "updates": [],
+  "updated_by": [
+   "rfc2817",
+   "rfc5785",
+   "rfc6266",
+   "rfc6585"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [
+   "rfc7230",
+   "rfc7231"
+  ],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc7230",
+  "number": 7230,
+  "title": "Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing",
+  "date": "June 2014",
+  "year": 2014,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc2145",
+   "rfc2616"
+  ],
+  "obsoleted_by": [
+   "rfc9110",
+   "rfc9112"
+  ],
+  "updates": [
+   "rfc2817",
+   "rfc2818"
+  ],
+  "updated_by": [
+   "rfc8615"
+  ],
+  "obsoletes_in_corpus": [
+   "rfc2616"
+  ],
+  "obsoleted_by_in_corpus": [
+   "rfc9110",
+   "rfc9112"
+  ],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc7231",
+  "number": 7231,
+  "title": "Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content",
+  "date": "June 2014",
+  "year": 2014,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc2616"
+  ],
+  "obsoleted_by": [
+   "rfc9110"
+  ],
+  "updates": [
+   "rfc2817"
+  ],
+  "updated_by": [],
+  "obsoletes_in_corpus": [
+   "rfc2616"
+  ],
+  "obsoleted_by_in_corpus": [
+   "rfc9110"
+  ],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc9110",
+  "number": 9110,
+  "title": "HTTP Semantics",
+  "date": "June 2022",
+  "year": 2022,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc2818",
+   "rfc7230",
+   "rfc7231",
+   "rfc7232",
+   "rfc7233",
+   "rfc7235",
+   "rfc7538",
+   "rfc7615",
+   "rfc7694"
+  ],
+  "obsoleted_by": [],
+  "updates": [
+   "rfc3864"
+  ],
+  "updated_by": [],
+  "obsoletes_in_corpus": [
+   "rfc7230",
+   "rfc7231"
+  ],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc9112",
+  "number": 9112,
+  "title": "HTTP/1.1",
+  "date": "June 2022",
+  "year": 2022,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc7230"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc9931"
+  ],
+  "obsoletes_in_corpus": [
+   "rfc7230"
+  ],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc7540",
+  "number": 7540,
+  "title": "Hypertext Transfer Protocol Version 2 (HTTP/2)",
+  "date": "May 2015",
+  "year": 2015,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [],
+  "obsoleted_by": [
+   "rfc9113"
+  ],
+  "updates": [],
+  "updated_by": [
+   "rfc8740"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [
+   "rfc9113"
+  ],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc9113",
+  "number": 9113,
+  "title": "HTTP/2",
+  "date": "June 2022",
+  "year": 2022,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc7540",
+   "rfc8740"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [
+   "rfc7540"
+  ],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc9114",
+  "number": 9114,
+  "title": "HTTP/3",
+  "date": "June 2022",
+  "year": 2022,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc5246",
+  "number": 5246,
+  "title": "The Transport Layer Security (TLS) Protocol Version 1.2",
+  "date": "August 2008",
+  "year": 2008,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc3268",
+   "rfc4346",
+   "rfc4366"
+  ],
+  "obsoleted_by": [
+   "rfc8446",
+   "rfc9846"
+  ],
+  "updates": [
+   "rfc4492"
+  ],
+  "updated_by": [
+   "rfc5746",
+   "rfc5878",
+   "rfc6176",
+   "rfc7465",
+   "rfc7507",
+   "rfc7568",
+   "rfc7627",
+   "rfc7685",
+   "rfc7905",
+   "rfc7919",
+   "rfc8447",
+   "rfc9155",
+   "rfc10015"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [
+   "rfc8446"
+  ],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc8446",
+  "number": 8446,
+  "title": "The Transport Layer Security (TLS) Protocol Version 1.3",
+  "date": "August 2018",
+  "year": 2018,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc5077",
+   "rfc5246",
+   "rfc6961"
+  ],
+  "obsoleted_by": [
+   "rfc9846"
+  ],
+  "updates": [
+   "rfc5705",
+   "rfc6066"
+  ],
+  "updated_by": [],
+  "obsoletes_in_corpus": [
+   "rfc5246"
+  ],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [
+   "rfc6066"
+  ],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc6066",
+  "number": 6066,
+  "title": "Transport Layer Security (TLS) Extensions: Extension Definitions",
+  "date": "January 2011",
+  "year": 2011,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc4366"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc8446",
+   "rfc8449",
+   "rfc9325",
+   "rfc9846"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": [
+   "rfc8446"
+  ]
+ },
+ {
+  "id": "rfc793",
+  "number": 793,
+  "title": "Transmission Control Protocol",
+  "date": "September 1981",
+  "year": 1981,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc761"
+  ],
+  "obsoleted_by": [
+   "rfc9293"
+  ],
+  "updates": [],
+  "updated_by": [
+   "rfc1122",
+   "rfc3168",
+   "rfc6093",
+   "rfc6528"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [
+   "rfc9293"
+  ],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc9293",
+  "number": 9293,
+  "title": "Transmission Control Protocol (TCP)",
+  "date": "August 2022",
+  "year": 2022,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc793",
+   "rfc879",
+   "rfc2873",
+   "rfc6093",
+   "rfc6429",
+   "rfc6528",
+   "rfc6691"
+  ],
+  "obsoleted_by": [],
+  "updates": [
+   "rfc1011",
+   "rfc1122",
+   "rfc5961"
+  ],
+  "updated_by": [],
+  "obsoletes_in_corpus": [
+   "rfc793"
+  ],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc768",
+  "number": 768,
+  "title": "User Datagram Protocol",
+  "date": "August 1980",
+  "year": 1980,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc9868"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc791",
+  "number": 791,
+  "title": "Internet Protocol",
+  "date": "September 1981",
+  "year": 1981,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc760"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc1349",
+   "rfc2474",
+   "rfc6864"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc792",
+  "number": 792,
+  "title": "Internet Control Message Protocol",
+  "date": "September 1981",
+  "year": 1981,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc777"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc950",
+   "rfc4884",
+   "rfc6633",
+   "rfc6918"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc2460",
+  "number": 2460,
+  "title": "Internet Protocol, Version 6 (IPv6) Specification",
+  "date": "December 1998",
+  "year": 1998,
+  "status": "DRAFT STANDARD",
+  "obsoletes": [
+   "rfc1883"
+  ],
+  "obsoleted_by": [
+   "rfc8200"
+  ],
+  "updates": [],
+  "updated_by": [
+   "rfc5095",
+   "rfc5722",
+   "rfc5871",
+   "rfc6437",
+   "rfc6564",
+   "rfc6935",
+   "rfc6946",
+   "rfc7045",
+   "rfc7112"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [
+   "rfc8200"
+  ],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc8200",
+  "number": 8200,
+  "title": "Internet Protocol, Version 6 (IPv6) Specification",
+  "date": "July 2017",
+  "year": 2017,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc2460"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc9673"
+  ],
+  "obsoletes_in_corpus": [
+   "rfc2460"
+  ],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc826",
+  "number": 826,
+  "title": "An Ethernet Address Resolution Protocol: Or Converting Network Protocol Addresses to 48.bit Ethernet Address for Transmission on Ethernet Hardware",
+  "date": "November 1982",
+  "year": 1982,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc5227",
+   "rfc5494"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc9000",
+  "number": 9000,
+  "title": "QUIC: A UDP-Based Multiplexed and Secure Transport",
+  "date": "May 2021",
+  "year": 2021,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc1034",
+  "number": 1034,
+  "title": "Domain names - concepts and facilities",
+  "date": "November 1987",
+  "year": 1987,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc882",
+   "rfc883",
+   "rfc973"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc1101",
+   "rfc1183",
+   "rfc1348",
+   "rfc1876",
+   "rfc1982",
+   "rfc2065",
+   "rfc2181",
+   "rfc2308",
+   "rfc2535",
+   "rfc4033",
+   "rfc4034",
+   "rfc4035",
+   "rfc4343",
+   "rfc4592",
+   "rfc5936",
+   "rfc8020",
+   "rfc8482",
+   "rfc8767",
+   "rfc9471"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc1035",
+  "number": 1035,
+  "title": "Domain names - implementation and specification",
+  "date": "November 1987",
+  "year": 1987,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc882",
+   "rfc883",
+   "rfc973"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc1101",
+   "rfc1183",
+   "rfc1348",
+   "rfc1876",
+   "rfc1982",
+   "rfc1995",
+   "rfc1996",
+   "rfc2065",
+   "rfc2136",
+   "rfc2137",
+   "rfc2181",
+   "rfc2308",
+   "rfc2535",
+   "rfc2673",
+   "rfc2845",
+   "rfc3425",
+   "rfc3658",
+   "rfc4033",
+   "rfc4034",
+   "rfc4035",
+   "rfc4343",
+   "rfc5936",
+   "rfc5966",
+   "rfc6604",
+   "rfc7766",
+   "rfc8482",
+   "rfc8490",
+   "rfc8767",
+   "rfc9619"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc2131",
+  "number": 2131,
+  "title": "Dynamic Host Configuration Protocol",
+  "date": "March 1997",
+  "year": 1997,
+  "status": "DRAFT STANDARD",
+  "obsoletes": [
+   "rfc1541"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc3396",
+   "rfc4361",
+   "rfc5494",
+   "rfc6842"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc5905",
+  "number": 5905,
+  "title": "Network Time Protocol Version 4: Protocol and Algorithms Specification",
+  "date": "June 2010",
+  "year": 2010,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc1305",
+   "rfc4330"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc7822",
+   "rfc8573",
+   "rfc9109",
+   "rfc9748",
+   "rfc9769"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc4632",
+  "number": 4632,
+  "title": "Classless Inter-domain Routing (CIDR): The Internet Address Assignment and Aggregation Plan",
+  "date": "August 2006",
+  "year": 2006,
+  "status": "BEST CURRENT PRACTICE",
+  "obsoletes": [
+   "rfc1519"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc3022",
+  "number": 3022,
+  "title": "Traditional IP Network Address Translator (Traditional NAT)",
+  "date": "January 2001",
+  "year": 2001,
+  "status": "INFORMATIONAL",
+  "obsoletes": [
+   "rfc1631"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc2821",
+  "number": 2821,
+  "title": "Simple Mail Transfer Protocol",
+  "date": "April 2001",
+  "year": 2001,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc821",
+   "rfc974",
+   "rfc1869"
+  ],
+  "obsoleted_by": [
+   "rfc5321"
+  ],
+  "updates": [],
+  "updated_by": [
+   "rfc5336"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [
+   "rfc5321"
+  ],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc5321",
+  "number": 5321,
+  "title": "Simple Mail Transfer Protocol",
+  "date": "October 2008",
+  "year": 2008,
+  "status": "DRAFT STANDARD",
+  "obsoletes": [
+   "rfc2821"
+  ],
+  "obsoleted_by": [],
+  "updates": [
+   "rfc1123"
+  ],
+  "updated_by": [
+   "rfc7504"
+  ],
+  "obsoletes_in_corpus": [
+   "rfc2821"
+  ],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc5322",
+  "number": 5322,
+  "title": "Internet Message Format",
+  "date": "October 2008",
+  "year": 2008,
+  "status": "DRAFT STANDARD",
+  "obsoletes": [
+   "rfc2822"
+  ],
+  "obsoleted_by": [],
+  "updates": [
+   "rfc4021"
+  ],
+  "updated_by": [
+   "rfc6854"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc2045",
+  "number": 2045,
+  "title": "Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies",
+  "date": "November 1996",
+  "year": 1996,
+  "status": "DRAFT STANDARD",
+  "obsoletes": [
+   "rfc1521",
+   "rfc1522",
+   "rfc1590"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc2184",
+   "rfc2231",
+   "rfc5335",
+   "rfc6532"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc3986",
+  "number": 3986,
+  "title": "Uniform Resource Identifier (URI): Generic Syntax",
+  "date": "January 2005",
+  "year": 2005,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc1808",
+   "rfc2396",
+   "rfc2732"
+  ],
+  "obsoleted_by": [],
+  "updates": [
+   "rfc1738"
+  ],
+  "updated_by": [
+   "rfc7320",
+   "rfc8820"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc7159",
+  "number": 7159,
+  "title": "The JavaScript Object Notation (JSON) Data Interchange Format",
+  "date": "March 2014",
+  "year": 2014,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc4627",
+   "rfc7158"
+  ],
+  "obsoleted_by": [
+   "rfc8259"
+  ],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [
+   "rfc8259"
+  ],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc8259",
+  "number": 8259,
+  "title": "The JavaScript Object Notation (JSON) Data Interchange Format",
+  "date": "December 2017",
+  "year": 2017,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc7159"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [
+   "rfc7159"
+  ],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc3629",
+  "number": 3629,
+  "title": "UTF-8, a transformation format of ISO 10646",
+  "date": "November 2003",
+  "year": 2003,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc2279"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc4648",
+  "number": 4648,
+  "title": "The Base16, Base32, and Base64 Data Encodings",
+  "date": "October 2006",
+  "year": 2006,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc3548"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc6455",
+  "number": 6455,
+  "title": "The WebSocket Protocol",
+  "date": "December 2011",
+  "year": 2011,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc7936",
+   "rfc8307",
+   "rfc8441"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc6749",
+  "number": 6749,
+  "title": "The OAuth 2.0 Authorization Framework",
+  "date": "October 2012",
+  "year": 2012,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc5849"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc8252",
+   "rfc8996",
+   "rfc9700"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc7519",
+  "number": 7519,
+  "title": "JSON Web Token (JWT)",
+  "date": "May 2015",
+  "year": 2015,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc7797",
+   "rfc8725"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc6265",
+  "number": 6265,
+  "title": "HTTP State Management Mechanism",
+  "date": "April 2011",
+  "year": 2011,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [
+   "rfc2965"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc9309",
+  "number": 9309,
+  "title": "Robots Exclusion Protocol",
+  "date": "September 2022",
+  "year": 2022,
+  "status": "PROPOSED STANDARD",
+  "obsoletes": [],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc2119",
+  "number": 2119,
+  "title": "Key words for use in RFCs to Indicate Requirement Levels",
+  "date": "March 1997",
+  "year": 1997,
+  "status": "BEST CURRENT PRACTICE",
+  "obsoletes": [],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc8174"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": [
+   "rfc8174"
+  ]
+ },
+ {
+  "id": "rfc8174",
+  "number": 8174,
+  "title": "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words",
+  "date": "May 2017",
+  "year": 2017,
+  "status": "BEST CURRENT PRACTICE",
+  "obsoletes": [],
+  "obsoleted_by": [],
+  "updates": [
+   "rfc2119"
+  ],
+  "updated_by": [],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [
+   "rfc2119"
+  ],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc854",
+  "number": 854,
+  "title": "Telnet Protocol Specification",
+  "date": "May 1983",
+  "year": 1983,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc764"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc5198"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ },
+ {
+  "id": "rfc959",
+  "number": 959,
+  "title": "File Transfer Protocol",
+  "date": "October 1985",
+  "year": 1985,
+  "status": "INTERNET STANDARD",
+  "obsoletes": [
+   "rfc765"
+  ],
+  "obsoleted_by": [],
+  "updates": [],
+  "updated_by": [
+   "rfc2228",
+   "rfc2640",
+   "rfc2773",
+   "rfc3659",
+   "rfc5797",
+   "rfc7151"
+  ],
+  "obsoletes_in_corpus": [],
+  "obsoleted_by_in_corpus": [],
+  "updates_in_corpus": [],
+  "updated_by_in_corpus": []
+ }
+]

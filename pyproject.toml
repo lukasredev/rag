@@ -1,0 +1,26 @@
+[project]
+name = "ragkit"
+version = "0.1.0"
+description = "Small helper library for the RAG workshop (LLM + embedding clients, BM25, metrics, local runner)"
+requires-python = ">=3.10"
+dependencies = [
+    "anthropic>=1.0",
+    "openai>=1.0",
+    "numpy",
+    "python-dotenv",
+    "requests",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+local = ["sentence-transformers"]
+studio = ["fastapi", "uvicorn[standard]"]
+server = ["fastapi", "uvicorn[standard]", "python-multipart", "jinja2"]
+data = ["pandas", "pyarrow", "huggingface_hub"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["ragkit"]

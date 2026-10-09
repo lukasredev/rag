@@ -1,0 +1,337 @@
+{"cmd": "[", "n_paragraphs": 53, "summary": "test - check file types and compare values"}
+{"cmd": "a2ensite", "n_paragraphs": 17, "summary": "a2ensite, a2dissite - enable or disable an apache2 site / virtual host"}
+{"cmd": "abduco", "n_paragraphs": 24, "summary": "abduco - terminal session manager"}
+{"cmd": "ack", "n_paragraphs": 299, "summary": "ack - grep-like text finder"}
+{"cmd": "acyclic", "n_paragraphs": 14, "summary": "acyclic - make directed graph acyclic"}
+{"cmd": "ag", "n_paragraphs": 75, "summary": "ag - The Silver Searcher. Like ack, but faster."}
+{"cmd": "age", "n_paragraphs": 73, "summary": "age - simple, modern, and secure file encryption"}
+{"cmd": "ansible", "n_paragraphs": 55, "summary": "ansible - Define and run a single task 'playbook' against a set of hosts"}
+{"cmd": "ansible-doc", "n_paragraphs": 30, "summary": "ansible-doc - plugin documentation tool"}
+{"cmd": "ansible-galaxy", "n_paragraphs": 21, "summary": "ansible-galaxy - Perform various Role and Collection related operations."}
+{"cmd": "ansible-playbook", "n_paragraphs": 55, "summary": "ansible-playbook - Runs Ansible playbooks, executing the defined tasks on the targeted hosts."}
+{"cmd": "ansiweather", "n_paragraphs": 21, "summary": "ansiweather — weather in terminal, with ANSI colors and Unicode symbols"}
+{"cmd": "aplay", "n_paragraphs": 55, "summary": "arecord, aplay - command-line sound recorder and player for ALSA soundcard driver"}
+{"cmd": "arduino", "n_paragraphs": 92, "summary": "arduino - Integrated development environment for Arduino boards"}
+{"cmd": "arp", "n_paragraphs": 32, "summary": "arp - manipulate the system ARP cache"}
+{"cmd": "arp-scan", "n_paragraphs": 95, "summary": "arp-scan - The ARP scanner"}
+{"cmd": "asciidoctor", "n_paragraphs": 48, "summary": "asciidoctor - converts AsciiDoc source files to HTML, DocBook, and other formats"}
+{"cmd": "assimp", "n_paragraphs": 13, "summary": "assimp - Open Asset Import Library Tool"}
+{"cmd": "astyle", "n_paragraphs": 17, "summary": "astyle - multi-language indentation and reformatting filters"}
+{"cmd": "authconfig", "n_paragraphs": 20, "summary": "authconfig, authconfig-tui - an interface for configuring system authentication resources"}
+{"cmd": "avrdude", "n_paragraphs": 159, "summary": "avrdude — driver program for ``simple'' Atmel AVR MCU programmer"}
+{"cmd": "b2sum", "n_paragraphs": 26, "summary": "b2sum - compute and check BLAKE2 message digest"}
+{"cmd": "bandwhich", "n_paragraphs": 18, "summary": "bandwhich - display current network utilization by process, connection and remote IP/hostname"}
+{"cmd": "base64", "n_paragraphs": 16, "summary": "base64 - base64 encode/decode data and print to standard output"}
+{"cmd": "bat", "n_paragraphs": 83, "summary": "bat - a cat(1) clone with syntax highlighting and Git integration."}
+{"cmd": "bc", "n_paragraphs": 134, "summary": "bc - An arbitrary precision calculator language"}
+{"cmd": "beep", "n_paragraphs": 56, "summary": "beep - beep the pc speaker any number of ways"}
+{"cmd": "bison", "n_paragraphs": 75, "summary": "bison - GNU Project parser generator (yacc replacement)"}
+{"cmd": "bmon", "n_paragraphs": 50, "summary": "bmon - bandwidth monitor and rate estimator"}
+{"cmd": "boot", "n_paragraphs": 29, "summary": "boot — system bootstrapping procedures"}
+{"cmd": "bootctl", "n_paragraphs": 40, "summary": "bootctl - Control EFI firmware boot settings and manage boot loader"}
+{"cmd": "c99", "n_paragraphs": 129, "summary": "c99 — compile standard C programs"}
+{"cmd": "cake", "n_paragraphs": 7, "summary": "cake - CakePHP application shell."}
+{"cmd": "carp", "n_paragraphs": 28, "summary": "carp — Common Address Redundancy Protocol"}
+{"cmd": "cat", "n_paragraphs": 59, "summary": "cat — concatenate and print files"}
+{"cmd": "cewl", "n_paragraphs": 38, "summary": "cewl - custom word list generator"}
+{"cmd": "cfdisk", "n_paragraphs": 49, "summary": "cfdisk - display or manipulate a disk partition table"}
+{"cmd": "check-support-status", "n_paragraphs": 41, "summary": "check-support-status - check installed packages for security support (debian-security-support)"}
+{"cmd": "chmod", "n_paragraphs": 90, "summary": "chmod — change the file modes"}
+{"cmd": "chronyc", "n_paragraphs": 358, "summary": "chronyc - command-line interface for chrony daemon"}
+{"cmd": "circo", "n_paragraphs": 143, "summary": "dot - filter for drawing directed graphs neato - filter for drawing undirected graphs twopi - filter for radial layouts of graphs circo - filter for circular layout of graphs fdp - filter for drawing undirected graphs sfdp - filter for drawing large undirected graphs patchwork - filter for squarified tree maps osage - filter for array-based layouts"}
+{"cmd": "clamscan", "n_paragraphs": 108, "summary": "clamscan - scan files and directories for viruses"}
+{"cmd": "clang++", "n_paragraphs": 91, "summary": "clang - the Clang C, C++, and Objective-C compiler"}
+{"cmd": "cmake", "n_paragraphs": 304, "summary": "cmake - CMake Command-Line Reference"}
+{"cmd": "codespell", "n_paragraphs": 23, "summary": "codespell - detect spelling mistakes in source code"}
+{"cmd": "copyq", "n_paragraphs": 54, "summary": "CopyQ - Clipboard Manager with Advanced Features"}
+{"cmd": "cowsay", "n_paragraphs": 20, "summary": "cowsay/cowthink - configurable speaking/thinking cow (and a bit more)"}
+{"cmd": "cppcheck", "n_paragraphs": 74, "summary": "cppcheck - Tool for static C/C++ code analysis"}
+{"cmd": "cpulimit", "n_paragraphs": 36, "summary": "cpulimit -- limits the CPU usage of a process"}
+{"cmd": "csvgrep", "n_paragraphs": 19, "summary": "csvgrep - csvgrep Documentation"}
+{"cmd": "cut", "n_paragraphs": 74, "summary": "cut — cut out selected fields of each line of a file"}
+{"cmd": "daemonize", "n_paragraphs": 34, "summary": "daemonize - run a program as a Unix daemon"}
+{"cmd": "dash", "n_paragraphs": 396, "summary": "dash — command interpreter (shell)"}
+{"cmd": "date", "n_paragraphs": 82, "summary": "date - print or set the system date and time"}
+{"cmd": "debsecan", "n_paragraphs": 60, "summary": "debsecan - Debian Security Analyzer"}
+{"cmd": "delta", "n_paragraphs": 58, "summary": "delta — make a delta (change) to an SCCS file (DEVELOPMENT)"}
+{"cmd": "deluser", "n_paragraphs": 42, "summary": "deluser, delgroup - remove a user or group from the system"}
+{"cmd": "dig", "n_paragraphs": 132, "summary": "dig - DNS lookup utility"}
+{"cmd": "dirs", "n_paragraphs": 444, "summary": "TclX - Extended Tcl: Extended command set for Tcl"}
+{"cmd": "docker", "n_paragraphs": 22, "summary": "docker - Docker image and container command line interface"}
+{"cmd": "docker-commit", "n_paragraphs": 10, "summary": "docker-commit - Create a new image from a container's changes"}
+{"cmd": "docker-container", "n_paragraphs": 6, "summary": "docker-container - Manage containers"}
+{"cmd": "docker-cp", "n_paragraphs": 8, "summary": "docker-cp - Copy files/folders between a container and the local filesystem"}
+{"cmd": "docker-inspect", "n_paragraphs": 22, "summary": "docker-inspect - Return low-level information on Docker objects"}
+{"cmd": "docker-login", "n_paragraphs": 15, "summary": "docker-login - Log in to a Docker registry"}
+{"cmd": "docker-secret", "n_paragraphs": 6, "summary": "docker-secret - Manage Docker secrets"}
+{"cmd": "docker-stats", "n_paragraphs": 10, "summary": "docker-stats - Display a live stream of container(s) resource usage statistics"}
+{"cmd": "dos2unix", "n_paragraphs": 219, "summary": "dos2unix - DOS/Mac to Unix and vice versa text file format converter"}
+{"cmd": "dotnet-publish", "n_paragraphs": 93, "summary": "dotnet publish - Packs the application and its dependencies into a folder for deployment to a hosting system."}
+{"cmd": "dpkg", "n_paragraphs": 129, "summary": "dpkg - a medium-level package manager for Debian"}
+{"cmd": "dumpe2fs", "n_paragraphs": 20, "summary": "dumpe2fs - dump ext2/ext3/ext4 file system information"}
+{"cmd": "duperemove", "n_paragraphs": 87, "summary": "duperemove - Find duplicate extents and print them to stdout"}
+{"cmd": "dwebp", "n_paragraphs": 34, "summary": "dwebp - decompress a WebP file to an image file"}
+{"cmd": "edquota", "n_paragraphs": 26, "summary": "edquota - edit user quotas"}
+{"cmd": "emacs", "n_paragraphs": 119, "summary": "emacs - GNU project Emacs editor"}
+{"cmd": "enca", "n_paragraphs": 187, "summary": "enca -- detect and convert encoding of text files"}
+{"cmd": "encfs", "n_paragraphs": 126, "summary": "encfs - mounts or creates an encrypted virtual filesystem"}
+{"cmd": "eval", "n_paragraphs": 28, "summary": "eval — construct command by concatenating arguments"}
+{"cmd": "exa", "n_paragraphs": 75, "summary": "exa — a modern replacement for ls"}
+{"cmd": "expand", "n_paragraphs": 16, "summary": "expand - convert tabs to spaces"}
+{"cmd": "faketime", "n_paragraphs": 24, "summary": "faketime - manipulate the system time for a given command"}
+{"cmd": "fallocate", "n_paragraphs": 33, "summary": "fallocate - preallocate or deallocate space to a file"}
+{"cmd": "fc-list", "n_paragraphs": 18, "summary": "fc-list - list available fonts"}
+{"cmd": "fcrackzip", "n_paragraphs": 41, "summary": "fcrackzip - a Free/Fast Zip Password Cracker"}
+{"cmd": "ffmpeg", "n_paragraphs": 622, "summary": "ffmpeg - ffmpeg video converter"}
+{"cmd": "ffprobe", "n_paragraphs": 259, "summary": "ffprobe - ffprobe media prober"}
+{"cmd": "find", "n_paragraphs": 341, "summary": "find - search for files in a directory hierarchy"}
+{"cmd": "firefox", "n_paragraphs": 45, "summary": "iceweasel - a Web browser for X11 derived from the Mozilla browser"}
+{"cmd": "fls", "n_paragraphs": 40, "summary": "fls - List file and directory names in a disk image."}
+{"cmd": "fping", "n_paragraphs": 60, "summary": "fping - send ICMP ECHO_REQUEST packets to network hosts"}
+{"cmd": "fswebcam", "n_paragraphs": 118, "summary": "fswebcam - Small and simple webcam for *nix."}
+{"cmd": "fuser", "n_paragraphs": 44, "summary": "fuser - identify processes using files or sockets"}
+{"cmd": "gcloud", "n_paragraphs": 35, "summary": "gcloud - manage Google Cloud Platform resources and developer workflow"}
+{"cmd": "gdebi", "n_paragraphs": 14, "summary": "gdebi - Simple tool to install deb files"}
+{"cmd": "gh", "n_paragraphs": 8, "summary": "gh - GitHub CLI"}
+{"cmd": "gh-alias", "n_paragraphs": 7, "summary": "gh-alias - Create command shortcuts"}
+{"cmd": "gh-api", "n_paragraphs": 39, "summary": "gh-api - Make an authenticated GitHub API request"}
+{"cmd": "gh-auth", "n_paragraphs": 6, "summary": "gh-auth - Login, logout, and refresh your authentication"}
+{"cmd": "gh-browse", "n_paragraphs": 18, "summary": "gh-browse - Open the repository in the browser"}
+{"cmd": "gh-extension", "n_paragraphs": 9, "summary": "gh-extension - Manage gh extensions"}
+{"cmd": "gh-gist", "n_paragraphs": 6, "summary": "gh-gist - Manage gists"}
+{"cmd": "gh-repo", "n_paragraphs": 7, "summary": "gh-repo - Create, clone, fork, and view repositories"}
+{"cmd": "gh-run", "n_paragraphs": 7, "summary": "gh-run - View details about workflow runs"}
+{"cmd": "gh-workflow", "n_paragraphs": 7, "summary": "gh-workflow - View details about GitHub Actions workflows"}
+{"cmd": "ghdl", "n_paragraphs": 30, "summary": "ghdl - VHDL compiler/simulator"}
+{"cmd": "gifsicle", "n_paragraphs": 138, "summary": "gifsicle - manipulates GIF images and animations"}
+{"cmd": "git-blame", "n_paragraphs": 94, "summary": "git-blame - Show what revision and author last modified each line of a file"}
+{"cmd": "git-bugreport", "n_paragraphs": 18, "summary": "git-bugreport - Collect information for user to file a bug report"}
+{"cmd": "git-clean", "n_paragraphs": 27, "summary": "git-clean - Remove untracked files from the working tree"}
+{"cmd": "git-contrib", "n_paragraphs": 13, "summary": "git-contrib - Show user´s contributions"}
+{"cmd": "git-count", "n_paragraphs": 16, "summary": "git-count - Show commit count"}
+{"cmd": "git-ignore-io", "n_paragraphs": 27, "summary": "git-ignore-io - Get sample gitignore file"}
+{"cmd": "git-mergetool", "n_paragraphs": 31, "summary": "git-mergetool - Run merge conflict resolution tools to resolve merge conflicts"}
+{"cmd": "git-obliterate", "n_paragraphs": 14, "summary": "git-obliterate - rewrite past commits to remove some files"}
+{"cmd": "git-request-pull", "n_paragraphs": 20, "summary": "git-request-pull - Generates a summary of pending changes"}
+{"cmd": "git-reset", "n_paragraphs": 74, "summary": "git-reset - Reset current HEAD to the specified state"}
+{"cmd": "git-restore", "n_paragraphs": 47, "summary": "git-restore - Restore working tree files"}
+{"cmd": "git-submodule", "n_paragraphs": 77, "summary": "git-submodule - Initialize, update or inspect submodules"}
+{"cmd": "git-tag", "n_paragraphs": 85, "summary": "git-tag - Create, list, delete or verify a tag object signed with GPG"}
+{"cmd": "gnome-extensions", "n_paragraphs": 62, "summary": "gnome-extensions - Command line tool for managing GNOME extensions"}
+{"cmd": "gnuplot", "n_paragraphs": 42, "summary": "gnuplot - an interactive plotting program"}
+{"cmd": "go-env", "n_paragraphs": 10, "summary": "go-env - print Go environment information"}
+{"cmd": "go-get", "n_paragraphs": 26, "summary": "go-get - add dependencies to current module and install them"}
+{"cmd": "go-list", "n_paragraphs": 50, "summary": "go-list - list packages or modules"}
+{"cmd": "go-run", "n_paragraphs": 12, "summary": "go-run - compile and run Go program"}
+{"cmd": "go-version", "n_paragraphs": 9, "summary": "go-version - print the build information for Go executables"}
+{"cmd": "gofmt", "n_paragraphs": 5, "summary": "gofmt - format Go code"}
+{"cmd": "grub-install", "n_paragraphs": 47, "summary": "grub-install - install GRUB to a device"}
+{"cmd": "grub-mkconfig", "n_paragraphs": 12, "summary": "grub-mkconfig - generate a GRUB configuration file"}
+{"cmd": "gs", "n_paragraphs": 98, "summary": "gs - Ghostscript (PostScript and PDF language interpreter and previewer)"}
+{"cmd": "guix-package", "n_paragraphs": 48, "summary": "guix package (GNU Guix) - manual page for guix package (GNU Guix) 1.2.0rc2"}
+{"cmd": "hashid", "n_paragraphs": 13, "summary": "hashid - Identify the different types of hashes used to encrypt data"}
+{"cmd": "hexyl", "n_paragraphs": 15, "summary": "hexyl - command-line hex viewer"}
+{"cmd": "hostname", "n_paragraphs": 7, "summary": "hostname - pokazuje lub ustawia nazwę hosta systemu domainname - pokazuje/ustawia nazwę domeny NIS/YP systemu dnsdomainname - pokazuje nazwę domeny systemu nisdomainname - pokazuje/ustawia nazwę domeny NIS/YP ypdomainname - pokazuje/ustawia nazwę domeny NIS/YP nodename - pokazuje/ustawia nazwę węzła DECnet systemu"}
+{"cmd": "hping", "n_paragraphs": 116, "summary": "hping2 - send (almost) arbitrary TCP/IP packets to network hosts"}
+{"cmd": "htop", "n_paragraphs": 160, "summary": "htop, pcp-htop - interactive process viewer"}
+{"cmd": "hwclock", "n_paragraphs": 46, "summary": "hwclock - a hardveróra (Real Time Clock) lekérdezése és beállítása"}
+{"cmd": "hyperfine", "n_paragraphs": 59, "summary": "hyperfine - command-line benchmarking tool"}
+{"cmd": "iconv", "n_paragraphs": 54, "summary": "iconv — codeset conversion"}
+{"cmd": "ifdown", "n_paragraphs": 50, "summary": "ifup - bring a network interface up"}
+{"cmd": "imapsync", "n_paragraphs": 156, "summary": "imapsync - Email IMAP tool for syncing, copying, migrating and archiving email mailboxes between two imap servers, one way, and without duplicates."}
+{"cmd": "inkscape", "n_paragraphs": 152, "summary": "Inkscape - an SVG (Scalable Vector Graphics) editing program."}
+{"cmd": "inxi", "n_paragraphs": 149, "summary": "inxi  - Command line system information script for console and IRC"}
+{"cmd": "ioping", "n_paragraphs": 67, "summary": "ioping - simple disk I/O latency monitoring tool"}
+{"cmd": "iostat", "n_paragraphs": 100, "summary": "iostat - Report Central Processing Unit (CPU) statistics and input/output statistics for devices and partitions."}
+{"cmd": "ip", "n_paragraphs": 73, "summary": "ip - show / manipulate routing, network devices, interfaces and tunnels"}
+{"cmd": "ipcmk", "n_paragraphs": 16, "summary": "ipcmk - make various IPC resources"}
+{"cmd": "ipfs", "n_paragraphs": 26, "summary": "ipfs - saves and restores information for NAT and state tables."}
+{"cmd": "ipython", "n_paragraphs": 10, "summary": "ipython - Tools for Interactive Computing in Python."}
+{"cmd": "java", "n_paragraphs": 92, "summary": "Name java - the Java application launcher"}
+{"cmd": "jdupes", "n_paragraphs": 77, "summary": "jdupes - finds and performs actions upon duplicate files"}
+{"cmd": "jest", "n_paragraphs": 119, "summary": "jest.js - manual page for jest.js 27.3.1-dev"}
+{"cmd": "jobs", "n_paragraphs": 68, "summary": "jobs — display status of jobs in the current session"}
+{"cmd": "journalctl", "n_paragraphs": 156, "summary": "journalctl - Query the systemd journal"}
+{"cmd": "jwt", "n_paragraphs": 19, "summary": "jwt - Python implementation of JSON Web Token"}
+{"cmd": "kafkacat", "n_paragraphs": 8, "summary": "kafkacat — generic producer and consumer for Apache Kafka"}
+{"cmd": "kdeconnect-cli", "n_paragraphs": 19, "summary": "kdeconnect-cli - KDE Connect CLI tool"}
+{"cmd": "keepassxc-cli", "n_paragraphs": 78, "summary": "keepassxc-cli - command line interface for the KeePassXC password manager"}
+{"cmd": "konsole", "n_paragraphs": 53, "summary": "Konsole - X terminal emulator for KDE."}
+{"cmd": "kscreen-console", "n_paragraphs": 46, "summary": "kscreen-console - lists monitor and screen configuration and their changes"}
+{"cmd": "kubectl-describe", "n_paragraphs": 96, "summary": "kubectl describe - Show details of a specific resource or group of resources"}
+{"cmd": "kubectl-get", "n_paragraphs": 117, "summary": "kubectl get - Display one or many resources"}
+{"cmd": "lastlog", "n_paragraphs": 21, "summary": "lastlog - reports the most recent login of all users or of a given user"}
+{"cmd": "latexmk", "n_paragraphs": 513, "summary": "latexmk - generate LaTeX document"}
+{"cmd": "lb", "n_paragraphs": 12, "summary": "lb - wrapper for live-build programs"}
+{"cmd": "ldapsearch", "n_paragraphs": 74, "summary": "ldapsearch - LDAP search tool"}
+{"cmd": "linkchecker", "n_paragraphs": 137, "summary": "linkchecker - command line client to check HTML documents and websites for broken links"}
+{"cmd": "lldb", "n_paragraphs": 76, "summary": "lldb - LLDB Documentation"}
+{"cmd": "llvm-bcanalyzer", "n_paragraphs": 64, "summary": "llvm-bcanalyzer - LLVM bitcode analyzer"}
+{"cmd": "llvm-config", "n_paragraphs": 29, "summary": "llvm-config - Print LLVM compilation options"}
+{"cmd": "llvm-strings", "n_paragraphs": 21, "summary": "llvm-strings - print strings"}
+{"cmd": "login", "n_paragraphs": 23, "summary": "login - rozpoczyna sesję pracy w systemie"}
+{"cmd": "lpr", "n_paragraphs": 43, "summary": "lpr - print files"}
+{"cmd": "lrzuntar", "n_paragraphs": 9, "summary": "lrzuntar - Extract whole tarball from .tar.lrz files"}
+{"cmd": "lsof", "n_paragraphs": 595, "summary": "lsof - list open files"}
+{"cmd": "lt", "n_paragraphs": 10, "summary": "lt - Generates a list of the child objects of a combination."}
+{"cmd": "luac", "n_paragraphs": 17, "summary": "luac - Lua compiler"}
+{"cmd": "lvs", "n_paragraphs": 76, "summary": "lvs — Display information about logical volumes"}
+{"cmd": "lxi", "n_paragraphs": 47, "summary": "lxi - a tool for controlling LXI compatible instruments."}
+{"cmd": "lxterminal", "n_paragraphs": 16, "summary": "lxterminal - a lightweight terminal emulator based on GTK+ for the LXDE desktop."}
+{"cmd": "lynx", "n_paragraphs": 310, "summary": "lynx - a general purpose distributed information browser for the World Wide Web"}
+{"cmd": "makepasswd", "n_paragraphs": 24, "summary": "makepasswd - generate and/or encrypt passwords"}
+{"cmd": "makepkg", "n_paragraphs": 98, "summary": "makepkg - package build utility"}
+{"cmd": "man", "n_paragraphs": 41, "summary": "man — display manual pages"}
+{"cmd": "mandb", "n_paragraphs": 40, "summary": "mandb - create or update the manual page index caches"}
+{"cmd": "mat2", "n_paragraphs": 26, "summary": "mat2 - the metadata anonymisation toolkit 2"}
+{"cmd": "medusa", "n_paragraphs": 42, "summary": "MEDUSA - Parallel Network Login Auditor"}
+{"cmd": "microcom", "n_paragraphs": 15, "summary": "microcom - A minimalistic terminal program"}
+{"cmd": "minetest", "n_paragraphs": 39, "summary": "minetest, minetestserver - Multiplayer infinite-world block sandbox"}
+{"cmd": "minetestserver", "n_paragraphs": 39, "summary": "minetest, minetestserver - Multiplayer infinite-world block sandbox"}
+{"cmd": "mitmdump", "n_paragraphs": 81, "summary": "mitmdump - a man-in-the-middle proxy with a command-line interface"}
+{"cmd": "mkinitcpio", "n_paragraphs": 86, "summary": "mkinitcpio - Create an initial ramdisk environment"}
+{"cmd": "mklost+found", "n_paragraphs": 10, "summary": "mklost+found - create a lost+found directory on a mounted Linux second extended file system"}
+{"cmd": "mlr", "n_paragraphs": 405, "summary": "miller - like awk, sed, cut, join, and sort for name-indexed data such as CSV and tabular JSON."}
+{"cmd": "mogrify", "n_paragraphs": 14, "summary": "mogrify - resize an image, blur, crop, despeckle, dither, draw on, flip, join, re-sample, and much more. Mogrify overwrites the original image file, whereas, convert(1) writes to a different image file."}
+{"cmd": "molecule", "n_paragraphs": 33, "summary": "molecule - draws 3D molecular structures"}
+{"cmd": "monodevelop", "n_paragraphs": 16, "summary": "monodevelop - Free GNOME Development Environment"}
+{"cmd": "mosquitto", "n_paragraphs": 152, "summary": "mosquitto - an MQTT broker"}
+{"cmd": "mosquitto_pub", "n_paragraphs": 169, "summary": "mosquitto_pub - an MQTT version 5/3.1.1/3.1 client for publishing simple messages"}
+{"cmd": "mount", "n_paragraphs": 531, "summary": "mount - mount a filesystem"}
+{"cmd": "mp4box", "n_paragraphs": 388, "summary": "MP4Box - GPAC command-line media packager"}
+{"cmd": "mycli", "n_paragraphs": 19, "summary": "mycli - Command line client for MySQL/MariaDB and Percona"}
+{"cmd": "mysqld", "n_paragraphs": 52, "summary": "mysqld - Starts the MySQL server demon"}
+{"cmd": "namcap", "n_paragraphs": 49, "summary": "namcap - package analysis utility"}
+{"cmd": "nasm", "n_paragraphs": 76, "summary": "nasm - the Netwide Assembler, a portable 80x86 assembler"}
+{"cmd": "nc", "n_paragraphs": 92, "summary": "nc — arbitrary TCP and UDP connections and listens"}
+{"cmd": "netstat", "n_paragraphs": 115, "summary": "netstat - Print network connections, routing tables, interface statistics, masquerade connections, and multicast memberships"}
+{"cmd": "nix-shell", "n_paragraphs": 61, "summary": "Name nix-shell - start an interactive shell based on a Nix expression"}
+{"cmd": "nm", "n_paragraphs": 67, "summary": "nm - list symbols from object files"}
+{"cmd": "nmtui", "n_paragraphs": 12, "summary": "nmtui - Text User Interface for controlling NetworkManager"}
+{"cmd": "notmuch", "n_paragraphs": 39, "summary": "notmuch - thread-based email index, search, and tagging"}
+{"cmd": "npx", "n_paragraphs": 52, "summary": "npx - Run a command from a local or remote npm package"}
+{"cmd": "nsenter", "n_paragraphs": 48, "summary": "nsenter - run program in different namespaces"}
+{"cmd": "ocamlopt", "n_paragraphs": 117, "summary": "ocamlopt - The OCaml native-code compiler"}
+{"cmd": "od", "n_paragraphs": 49, "summary": "od - dump files in octal and other formats"}
+{"cmd": "ogr2ogr", "n_paragraphs": 99, "summary": "ogr2ogr - Converts simple features data between file formats."}
+{"cmd": "opam", "n_paragraphs": 162, "summary": "opam - source-based package management"}
+{"cmd": "openssl-dgst", "n_paragraphs": 53, "summary": "openssl-dgst - perform digest operations"}
+{"cmd": "openssl-genpkey", "n_paragraphs": 80, "summary": "openssl-genpkey - generate a private key"}
+{"cmd": "openssl-ts", "n_paragraphs": 113, "summary": "openssl-ts, ts - Time Stamping Authority tool (client/server)"}
+{"cmd": "osage", "n_paragraphs": 100, "summary": "osage - filter for drawing clustered graphs"}
+{"cmd": "pacman", "n_paragraphs": 118, "summary": "pacman - package manager utility"}
+{"cmd": "pacman-key", "n_paragraphs": 49, "summary": "pacman-key - manage pacman's list of trusted keys"}
+{"cmd": "pacman4console", "n_paragraphs": 11, "summary": "pacman4console - console based pacman game"}
+{"cmd": "partprobe", "n_paragraphs": 13, "summary": "partprobe - inform the OS of partition table changes"}
+{"cmd": "passwd", "n_paragraphs": 65, "summary": "passwd - change user password"}
+{"cmd": "paste", "n_paragraphs": 63, "summary": "paste — merge corresponding or subsequent lines of files"}
+{"cmd": "patch", "n_paragraphs": 148, "summary": "patch - apply a diff file to an original"}
+{"cmd": "pdftex", "n_paragraphs": 67, "summary": "pdftex - PDF output from TeX"}
+{"cmd": "pdftotext", "n_paragraphs": 38, "summary": "pdftotext - Portable Document Format (PDF) to text converter (version 3.03)"}
+{"cmd": "pg_dump", "n_paragraphs": 146, "summary": "pg_dump - extract a PostgreSQL database into a script file or other archive file"}
+{"cmd": "pg_restore", "n_paragraphs": 102, "summary": "pg_restore - restore a PostgreSQL database from an archive file created by pg_dump"}
+{"cmd": "pgrep", "n_paragraphs": 56, "summary": "pgrep, pkill, pwait - look up, signal, or wait for processes based on name and other attributes"}
+{"cmd": "php", "n_paragraphs": 69, "summary": "php - PHP Command Line Interface 'CLI'"}
+{"cmd": "phpdox", "n_paragraphs": 14, "summary": "phpDox - phpDox command line interface"}
+{"cmd": "phpstorm", "n_paragraphs": 5, "summary": "phpstorm — launch JetBrains PhpStorm Integrated Development Environment"}
+{"cmd": "pip", "n_paragraphs": 43, "summary": "pip - package manager for Python packages"}
+{"cmd": "pkgfile", "n_paragraphs": 30, "summary": "pkgfile - an alpm .files metadata explorer"}
+{"cmd": "playerctl", "n_paragraphs": 57, "summary": "playerctl — control media players via MPRIS"}
+{"cmd": "pngcheck", "n_paragraphs": 17, "summary": "pngcheck - tests PNG, JNG or MNG image files for corruption, and prints size/type info."}
+{"cmd": "po4a-translate", "n_paragraphs": 30, "summary": "po4a-translate - convert a PO file back to documentation format"}
+{"cmd": "pstree", "n_paragraphs": 35, "summary": "pstree - display a tree of processes"}
+{"cmd": "ptx", "n_paragraphs": 29, "summary": "ptx - produce a permuted index of file contents"}
+{"cmd": "puppet", "n_paragraphs": 7, "summary": "puppet"}
+{"cmd": "puppet-agent", "n_paragraphs": 63, "summary": "puppet-agent - The puppet agent daemon"}
+{"cmd": "puppet-apply", "n_paragraphs": 30, "summary": "puppet-apply - Apply Puppet manifests locally"}
+{"cmd": "pw-play", "n_paragraphs": 31, "summary": "pw-cat - Play and record media with PipeWire"}
+{"cmd": "pwd", "n_paragraphs": 41, "summary": "pwd — return working directory name"}
+{"cmd": "pycodestyle", "n_paragraphs": 29, "summary": "pycodestyle - A tool to check your Python code against some of the style conventions in PEP 8."}
+{"cmd": "pyenv", "n_paragraphs": 153, "summary": "pyenv - Simple Python version management"}
+{"cmd": "rar", "n_paragraphs": 117, "summary": "rar - archive files with compression"}
+{"cmd": "readelf", "n_paragraphs": 80, "summary": "readelf - display information about ELF files"}
+{"cmd": "realpath", "n_paragraphs": 20, "summary": "realpath - print the resolved path"}
+{"cmd": "reboot", "n_paragraphs": 20, "summary": "halt, poweroff, reboot - Halt, power-off or reboot the machine"}
+{"cmd": "redis-server", "n_paragraphs": 8, "summary": "redis-server - Persistent key-value database"}
+{"cmd": "rename", "n_paragraphs": 33, "summary": "rename - renames multiple files using perl expressions"}
+{"cmd": "repquota", "n_paragraphs": 23, "summary": "repquota - summarize quotas for a filesystem"}
+{"cmd": "resolveip", "n_paragraphs": 19, "summary": "resolveip - resolve host name to IP address or vice versa"}
+{"cmd": "rg", "n_paragraphs": 380, "summary": "rg - recursively search the current directory for lines matching a pattern"}
+{"cmd": "rig", "n_paragraphs": 168, "summary": "rig - Monitor a system for events and trigger specific actions"}
+{"cmd": "route", "n_paragraphs": 57, "summary": "route - show / manipulate the IP routing table"}
+{"cmd": "rpmspec", "n_paragraphs": 25, "summary": "rpmspec - RPM Spec Tool"}
+{"cmd": "s", "n_paragraphs": 11, "summary": "KJS::HashEntry - An entry in a hash table."}
+{"cmd": "sa", "n_paragraphs": 22, "summary": "sa -  summarizes accounting information"}
+{"cmd": "sacct", "n_paragraphs": 259, "summary": "sacct - displays accounting data for all jobs and job steps in the Slurm job accounting log or Slurm database"}
+{"cmd": "salt-key", "n_paragraphs": 57, "summary": "salt-key - salt-key Documentation"}
+{"cmd": "sar", "n_paragraphs": 404, "summary": "sar - Collect, report, or save system activity information."}
+{"cmd": "scp", "n_paragraphs": 38, "summary": "scp — OpenSSH secure file copy"}
+{"cmd": "scrapy", "n_paragraphs": 28, "summary": "scrapy - the Scrapy command-line tool"}
+{"cmd": "screenfetch", "n_paragraphs": 35, "summary": "screenFetch - The Bash Screenshot Information Tool"}
+{"cmd": "scrot", "n_paragraphs": 66, "summary": "scrot - command line screen capture utility"}
+{"cmd": "sha1sum", "n_paragraphs": 25, "summary": "sha1sum - compute and check SHA1 message digest"}
+{"cmd": "sha512sum", "n_paragraphs": 24, "summary": "sha512sum - compute and check SHA512 message digest"}
+{"cmd": "sic", "n_paragraphs": 14, "summary": "sic - simple irc client"}
+{"cmd": "smbclient", "n_paragraphs": 234, "summary": "smbclient - ftp-like client to access SMB/CIFS resources on servers"}
+{"cmd": "snmpwalk", "n_paragraphs": 22, "summary": "snmpwalk - retrieve a subtree of management values using SNMP GETNEXT requests"}
+{"cmd": "speedometer", "n_paragraphs": 28, "summary": "speedometer - measure and display the rate of data across a network connection"}
+{"cmd": "ss", "n_paragraphs": 145, "summary": "ss - another utility to investigate sockets"}
+{"cmd": "ss-local", "n_paragraphs": 44, "summary": "ss-local - shadowsocks client as socks5 proxy, libev port"}
+{"cmd": "ssh", "n_paragraphs": 178, "summary": "ssh — OpenSSH remote login client"}
+{"cmd": "ssh-copy-id", "n_paragraphs": 22, "summary": "ssh-copy-id — use locally available keys to authorise logins on a remote machine"}
+{"cmd": "ssh-keyscan", "n_paragraphs": 26, "summary": "ssh-keyscan — gather SSH public keys from servers"}
+{"cmd": "st-util", "n_paragraphs": 21, "summary": "st-util - Run GDB server to interact with STM32 device"}
+{"cmd": "stack", "n_paragraphs": 31, "summary": "stack_init, stack_push, stack_pop, stack_top, stack_size, stack_empty, stack_free -- generic list-based stack routines"}
+{"cmd": "steam", "n_paragraphs": 6, "summary": "steam - a launcher for the Steam client from Valve Corporation"}
+{"cmd": "stow", "n_paragraphs": 63, "summary": "stow - manage farms of symbolic links"}
+{"cmd": "stress", "n_paragraphs": 25, "summary": "stress - tool to impose load on and stress test systems"}
+{"cmd": "su", "n_paragraphs": 13, "summary": "su - zmienia ID użytkownika lub umożliwia stanie się superużytkownikiem"}
+{"cmd": "swift", "n_paragraphs": 27, "summary": "swift - OpenStack Swift client tool"}
+{"cmd": "tcpdump", "n_paragraphs": 263, "summary": "tcpdump - dump traffic on a network"}
+{"cmd": "timidity", "n_paragraphs": 273, "summary": "TiMidity++ - MIDI-to-WAVE converter and player"}
+{"cmd": "tmuxinator", "n_paragraphs": 33, "summary": "tmuxinator - manage complex tmux sessions easily"}
+{"cmd": "top", "n_paragraphs": 425, "summary": "top - display Linux processes"}
+{"cmd": "touch", "n_paragraphs": 105, "summary": "touch — change file access and modification times"}
+{"cmd": "transcode", "n_paragraphs": 316, "summary": "transcode - LINUX video stream processing tool"}
+{"cmd": "travis", "n_paragraphs": 22, "summary": "travis - Trajectory Analyzer and Visualizer"}
+{"cmd": "tree", "n_paragraphs": 71, "summary": "tree - list contents of directories in a tree-like format."}
+{"cmd": "tsort", "n_paragraphs": 11, "summary": "tsort - perform topological sort"}
+{"cmd": "tty", "n_paragraphs": 11, "summary": "tty - print the file name of the terminal connected to standard input"}
+{"cmd": "tune2fs", "n_paragraphs": 114, "summary": "tune2fs - adjust tunable file system parameters on ext2/ext3/ext4 file systems"}
+{"cmd": "ufraw-batch", "n_paragraphs": 76, "summary": "UFRaw - Convert camera RAW images to standard image files."}
+{"cmd": "ufw", "n_paragraphs": 172, "summary": "ufw - program for managing a netfilter firewall"}
+{"cmd": "unclutter", "n_paragraphs": 20, "summary": "unclutter - remove idle cursor image from screen"}
+{"cmd": "unison", "n_paragraphs": 59, "summary": "unison - a file-synchronization tool for Unix and Windows"}
+{"cmd": "unlink", "n_paragraphs": 11, "summary": "unlink - call the unlink function to remove the specified file"}
+{"cmd": "unshadow", "n_paragraphs": 8, "summary": "unshadow - combines passwd and shadow files"}
+{"cmd": "useradd", "n_paragraphs": 124, "summary": "useradd - create a new user or update default new user information"}
+{"cmd": "userdel", "n_paragraphs": 53, "summary": "userdel - delete a user account and related files"}
+{"cmd": "usermod", "n_paragraphs": 82, "summary": "usermod - modify a user account"}
+{"cmd": "uuidgen", "n_paragraphs": 21, "summary": "uuidgen - create a new UUID value"}
+{"cmd": "uvicorn", "n_paragraphs": 26, "summary": "uvicorn — ASGI server implementation"}
+{"cmd": "vagrant", "n_paragraphs": 24, "summary": "Vagrant - Tool for building and distributing virtualized development environments."}
+{"cmd": "valgrind", "n_paragraphs": 425, "summary": "valgrind - a suite of tools for debugging and profiling programs"}
+{"cmd": "vpnc", "n_paragraphs": 61, "summary": "vpnc - client for Cisco VPN3000 Concentrator, IOS and PIX"}
+{"cmd": "weasyprint", "n_paragraphs": 12, "summary": "weasyprint - Document factory for creating PDF files from HTML"}
+{"cmd": "wget", "n_paragraphs": 386, "summary": "Wget - The non-interactive network downloader."}
+{"cmd": "which", "n_paragraphs": 28, "summary": "which - shows the full path of (shell) commands."}
+{"cmd": "who", "n_paragraphs": 74, "summary": "who — display who is on the system"}
+{"cmd": "wifi-menu", "n_paragraphs": 21, "summary": "wifi-menu - Interactively connect to a wireless network"}
+{"cmd": "wpa_cli", "n_paragraphs": 50, "summary": "wpa_cli - WPA command line client"}
+{"cmd": "wtf", "n_paragraphs": 13, "summary": "wtf — look up terms"}
+{"cmd": "x0vncserver", "n_paragraphs": 60, "summary": "x0vncserver - TigerVNC Server for X displays"}
+{"cmd": "xbacklight", "n_paragraphs": 13, "summary": "xbacklight - adjust backlight brightness using RandR extension"}
+{"cmd": "xclip", "n_paragraphs": 34, "summary": "xclip - command line interface to X selections (clipboard)"}
+{"cmd": "xdotool", "n_paragraphs": 263, "summary": "xdotool - command-line X11 automation tool"}
+{"cmd": "xetex", "n_paragraphs": 14, "summary": "xetex - extended TeX with native support for Unicode, OpenType, system fonts"}
+{"cmd": "xeyes", "n_paragraphs": 17, "summary": "xeyes - a follow the mouse X demo"}
+{"cmd": "xrandr", "n_paragraphs": 73, "summary": "xrandr - primitive command line interface to RandR extension"}
+{"cmd": "xsv", "n_paragraphs": 11, "summary": "xsv - viewer for displaying captured streams real-time under X"}
+{"cmd": "xxd", "n_paragraphs": 59, "summary": "xxd - make a hexdump or do the reverse."}
+{"cmd": "xz", "n_paragraphs": 284, "summary": "xz, unxz, xzcat, lzma, unlzma, lzcat - Compress or decompress .xz and .lzma files"}
+{"cmd": "zgrep", "n_paragraphs": 9, "summary": "zgrep - search possibly compressed files for a regular expression"}
+{"cmd": "zile", "n_paragraphs": 21, "summary": "Zile - Zile Is Lossy Emacs"}
+{"cmd": "zip", "n_paragraphs": 448, "summary": "zip - package and compress (archive) files"}
+{"cmd": "zipalign", "n_paragraphs": 22, "summary": "zipalign - ZIP/APK alignment tool for Android application files"}
+{"cmd": "zstd", "n_paragraphs": 148, "summary": "zstd - zstd, zstdmt, unzstd, zstdcat - Compress or decompress .zst files"}
+{"cmd": "zypper", "n_paragraphs": 757, "summary": "zypper - Command-line interface to ZYpp system management library (libzypp)"}

@@ -1,0 +1,16 @@
+# Used by `docker build -f studio/Dockerfile .` (BuildKit): keep secrets, local state and big folders out of
+# the image. The password comes from `docker run -e RAG_STUDIO_PASSWORD=...`, never from a .env file.
+.env
+.env.*
+.git
+.venv
+.studio
+.cache
+**/__pycache__
+*.zip
+report*.json
+mine
+tracks/*/hidden
+tracks/*/examples
+tracks/*/results
+tracks/*/raw
