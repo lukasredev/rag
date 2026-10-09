@@ -69,5 +69,9 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # the public repo: the footer links to the commit
+          build-args: |
+            GIT_SHA=${{ github.sha }}
+            GIT_REPO=${{ github.server_url }}/${{ github.repository }}
           cache-from: type=gha,scope=studio
           cache-to: type=gha,mode=max,scope=studio

@@ -4,7 +4,7 @@
 #
 #   python scripts/make_student_repo.py ../rag-workshop      # in the instructor repo
 #   cd ../rag-workshop
-#   docker build -f studio/Dockerfile -t rag-studio .
+#   docker build -f studio/Dockerfile -t rag-studio --build-arg GIT_SHA=$(git rev-parse HEAD) .
 #   docker run -d --name rag-studio --restart unless-stopped -p 127.0.0.1:8765:8765 \
 #       -e RAG_STUDIO_PASSWORD='<workshop password>' rag-studio
 #
@@ -28,6 +28,11 @@ COPY START_HERE.md README.md ./
 RUN useradd --create-home --uid 10001 studio
 USER studio
 ENV RAG_STUDIO_PUBLIC=1 RAG_STUDIO_DIR=/tmp/rag-studio HF_HUB_OFFLINE=1
+
+# the commit this image was built from, shown in the page footer (the workflow passes it)
+ARG GIT_SHA=dev
+ARG GIT_REPO=
+ENV RAG_BUILD_SHA=$GIT_SHA RAG_BUILD_REPO=$GIT_REPO
 
 EXPOSE 8765
 HEALTHCHECK --interval=30s --timeout=5s \

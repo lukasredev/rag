@@ -57,7 +57,9 @@ button,input,textarea,select { font:inherit; color:inherit; }
 .dot.error { background:var(--bad); }
 @keyframes pulse { to { opacity:.25; } }
 
-main { padding:24px var(--pad) 90px; max-width:1680px; margin:0 auto; }
+main { padding:24px var(--pad) 40px; max-width:1680px; margin:0 auto; }
+.foot { text-align:center; color:var(--mute); font-size:13px; padding:14px var(--pad) 40px; border-top:1px solid var(--rule);
+        max-width:1680px; margin:0 auto; } .foot a { color:inherit; }
 .lede { margin-bottom:14px; max-width:80ch; }
 .lede h1 { font-size:29px; line-height:1.2; }
 .lede p { color:var(--mute); margin:6px 0 0; }
@@ -319,6 +321,7 @@ mark.ev-hl { background:#E2C3AE; outline:2px solid var(--accent); }
 
 <nav class="rail" id="rail"></nav>
 <main><div id="view"></div></main>
+<footer class="foot" id="foot"></footer>
 <div class="keys">1-5 views &nbsp; j/k next question &nbsp; click a doc id to open it</div>
 
 <script>
@@ -1182,6 +1185,7 @@ document.addEventListener('keydown', e => {
 
 (async () => {
   try { S.info = await api('/api/info'); } catch (e) { $('view').innerHTML = `<div class="banner bad">${esc(e.message)}</div>`; return; }
+  $('foot').innerHTML = S.info.footer || '';  // built by the server from fixed strings
   if (!S.info.tracks.length) { $('view').innerHTML = '<div class="banner bad">No tracks with a test set found.</div>'; return; }
   if (!S.info.tracks.some(t => t.name === S.track)) S.track = S.info.tracks[0].name;
   for (const t of S.info.tracks) if (!t.pipelines.some(p => p.path === S.pipe[t.name])) S.pipe[t.name] = t.pipelines[0].path;

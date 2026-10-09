@@ -34,6 +34,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from ragkit import config, spend, trace
+from ragkit.build import footer_html
 from studio.corpus import ADAPTERS as CORPUS_ADAPTERS
 from studio.corpus import length_histogram
 from studio.corpus import search as corpus_search
@@ -269,7 +270,8 @@ def info():
                        "pipelines": pipelines_of(d.name)})
     return {"tracks": tracks, "model": model, "judge_model": config.get("RAG_JUDGE_MODEL", "claude-haiku-5-5"),
             "embed_model": config.embed_model(), "models": config.allowed_models(), "prices": spend.PRICES,
-            "has_key": has_key, "spent": round(spend.total(), 4), "cap": spend.cap(), "public": PUBLIC}
+            "has_key": has_key, "spent": round(spend.total(), 4), "cap": spend.cap(), "public": PUBLIC,
+            "footer": footer_html()}
 
 
 @app.get("/api/guide")
@@ -674,10 +676,11 @@ form {{ background:#FBFAF6; border:1px solid #DDD6C8; border-radius:4px; padding
 h1 {{ font-size:22px; margin:0 0 4px; }} p {{ color:#6B655B; margin:0 0 16px; }}
 input, button {{ font:inherit; width:100%; box-sizing:border-box; padding:9px 11px; border-radius:3px; }}
 input {{ border:1px solid #CFC7B7; margin-bottom:10px; }} button {{ border:0; background:#B4532A; color:#fff; cursor:pointer; }}
-.err {{ color:#A3341C; }}</style></head><body><form method="post" action="/login">
+.err {{ color:#A3341C; }} body {{ grid-template-rows:1fr auto; }}
+footer {{ color:#6B655B; font-size:13px; padding:16px 0; text-align:center; }} footer a {{ color:inherit; }}</style></head><body><form method="post" action="/login">
 <h1>RAG Studio</h1><p>{message}</p>
 <input type="password" name="password" placeholder="workshop password" autofocus required>
-<button>Open</button></form></body></html>"""
+<button>Open</button></form><footer>{footer}</footer></body></html>"""
 
 
 @app.middleware("http")
@@ -701,7 +704,7 @@ async def public_guard(request: Request, call_next):
 
 @app.get("/login", response_class=HTMLResponse)
 def login_page():
-    return LOGIN_PAGE.format(message="Enter the workshop password.")
+    return LOGIN_PAGE.format(message="Enter the workshop password.", footer=footer_html())
 
 
 @app.post("/login")
@@ -712,7 +715,8 @@ async def login(request: Request):
     given = (form.get("password") or [""])[0]
     if not _password() or not hmac.compare_digest(given.encode(), _password().encode()):
         await asyncio.sleep(1)  # slows down guessing
-        return HTMLResponse(LOGIN_PAGE.format(message='<span class="err">Wrong password.</span>'), status_code=401)
+        return HTMLResponse(LOGIN_PAGE.format(message='<span class="err">Wrong password.</span>', footer=footer_html()),
+                            status_code=401)
     response = RedirectResponse("/", status_code=303)
     https = request.url.scheme == "https" or request.headers.get("x-forwarded-proto") == "https"
     response.set_cookie(COOKIE, _cookie_value(), httponly=True, samesite="lax", secure=https, max_age=7 * 24 * 3600)
