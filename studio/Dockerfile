@@ -11,7 +11,8 @@
 # Then put HTTPS in front of 127.0.0.1:8765 (e.g. Caddy). The image has no API key and needs none: the shared
 # Studio never runs pipelines or calls an LLM. No torch either, so it stays small.
 
-FROM python:3.12-slim
+# python:3.12-slim from Docker Hub, via Google's mirror (no anonymous rate limit on CI runners)
+FROM mirror.gcr.io/library/python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1
 WORKDIR /app
