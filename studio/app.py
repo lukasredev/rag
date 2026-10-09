@@ -35,7 +35,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from ragkit import config, spend, trace
-from ragkit.build import footer_html
+from ragkit.build import analytics_html, footer_html
 from studio.corpus import ADAPTERS as CORPUS_ADAPTERS
 from studio.corpus import length_histogram
 from studio.corpus import search as corpus_search
@@ -671,7 +671,7 @@ def _logged_in(request: Request) -> bool:
 
 
 LOGIN_PAGE = """<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>RAG Studio</title><style>
+<title>RAG Studio</title>{analytics}<style>
 body {{ font: 15px/1.5 system-ui, sans-serif; background:#F4F1EA; color:#1F1D1A; display:grid; place-items:center;
         min-height:100vh; margin:0; padding:0 16px; }}
 form {{ background:#FBFAF6; border:1px solid #DDD6C8; border-radius:4px; padding:28px; width:100%; max-width:340px; }}
@@ -708,7 +708,7 @@ async def public_guard(request: Request, call_next):
 
 @app.get("/login", response_class=HTMLResponse)
 def login_page():
-    return LOGIN_PAGE.format(message="Enter the workshop password.", footer=footer_html())
+    return LOGIN_PAGE.format(message="Enter the workshop password.", footer=footer_html(), analytics=analytics_html())
 
 
 @app.post("/login")
@@ -719,7 +719,8 @@ async def login(request: Request):
     given = (form.get("password") or [""])[0]
     if not _password() or not hmac.compare_digest(given.encode(), _password().encode()):
         await asyncio.sleep(1)  # slows down guessing
-        return HTMLResponse(LOGIN_PAGE.format(message='<span class="err">Wrong password.</span>', footer=footer_html()),
+        return HTMLResponse(LOGIN_PAGE.format(message='<span class="err">Wrong password.</span>', footer=footer_html(),
+                                              analytics=analytics_html()),
                             status_code=401)
     response = RedirectResponse("/", status_code=303)
     https = request.url.scheme == "https" or request.headers.get("x-forwarded-proto") == "https"
@@ -729,4 +730,5 @@ async def login(request: Request):
 
 @app.get("/")
 def index():
-    return FileResponse(STATIC / "index.html")
+    page = (STATIC / "index.html").read_text()
+    return HTMLResponse(page.replace("</head>", analytics_html() + "\n</head>", 1))
