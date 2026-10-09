@@ -35,7 +35,7 @@ the "team" is just you: one name and one token, the same as for a team.
 ANTHROPIC_API_KEY=sk-ant-...
 RAG_TEAM=your-team-name          # or your own name if you work alone
 RAG_TOKEN=your-token
-RAG_SERVER=http://<server address>:8000
+RAG_SERVER=https://viscon-eval.lukasre.ch
 ```
 
 Keep the key and token to yourself (or your team). In a team, everyone uses the same name and token, so
@@ -160,7 +160,7 @@ Count them. The most common reason is where your first change should go.
    after a minute or two (longer if other teams are in the queue, or if your pipeline embeds a lot):
 
    ```
-   submitted #38: http://<server address>:8000/submission/38
+   submitted #38: https://viscon-eval.lukasre.ch/submission/38
    status: done
    overall: abstained=0.000  answer_f1=0.210  correct=0.520  evidence_recall@5=0.567
      abstractive            n=37   correct=0.595
@@ -169,7 +169,7 @@ Count them. The most common reason is where your first change should go.
 
    Your score on the hidden questions will differ from your test score, often by up to 0.1 either way
    (here 0.52 against 0.40). The sets are small, so differences below about 0.05 between two submissions are
-   noise. The leaderboard is at `http://<server address>:8000`.
+   noise. The leaderboard is at `https://viscon-eval.lukasre.ch`.
 
 Keep every version that worked (`cp -r mine mine-v2`, or commit it with git: the folder is a git repository).
 You will want to go back.

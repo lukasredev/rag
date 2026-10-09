@@ -57,7 +57,7 @@ python -m ragkit.run --track technews --pipeline tracks/technews/skeleton/pipeli
 python -m ragkit.run --track technews --pipeline my_pipeline.py --out report.json   # per-question details
 
 # submit to the hidden evaluation set (max 100 per hour per track)
-python scripts/submit.py --server http://<server>:8000 --team <team> --token <token> \
+python scripts/submit.py --server https://viscon-eval.lukasre.ch --team <team> --token <token> \
     --track technews --pipeline my_pipeline.py --label hybrid-v1 \
     --note "Added source/date headers to chunks; expect temporal questions to improve" --wait
 ```
