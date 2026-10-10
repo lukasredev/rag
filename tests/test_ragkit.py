@@ -114,10 +114,10 @@ def test_only_allowed_models(monkeypatch):
 
 def test_parallel_submissions_share_the_team_budget(tmp_path, monkeypatch):
     import httpx
+    proxy = pytest.importorskip("server.llm_proxy")  # the student repo has no server/
     from fastapi.testclient import TestClient
 
     from ragkit import spend
-    from server import llm_proxy as proxy
 
     monkeypatch.setenv("RAG_CACHE_DIR", str(tmp_path))
     monkeypatch.setenv("RAG_MAX_USD", "off")
@@ -141,3 +141,41 @@ def test_parallel_submissions_share_the_team_budget(tmp_path, monkeypatch):
     c = proxy.open_session(3, "team-x", 0.0, staff=False)  # database not updated yet: the live total still counts
     assert call(c) == 403
     proxy.close_session(c)
+
+
+def test_proxy_refuses_requests_that_reach_out():
+    check_body = pytest.importorskip("server.llm_proxy").check_body  # the student repo has no server/
+
+    base = {"model": "claude-haiku-5-5", "max_tokens": 10, "messages": [{"role": "user", "content": "hi"}]}
+    assert check_body({**base, "system": "s", "output_config": {"effort": "low"}}) is None
+    fallback = {**base, "fallbacks": "default"}
+    assert check_body(fallback) is None and "fallbacks" not in fallback  # dropped, not refused
+    assert check_body({**base, "tools": [{"name": "f", "input_schema": {"type": "object"}}]}) is None
+    assert check_body({**base, "tools": [{"type": "web_fetch_20250910", "name": "web_fetch"}]})
+    assert check_body({**base, "mcp_servers": [{"type": "url", "url": "https://evil.example"}]})
+    doc = {"type": "document", "source": {"type": "url", "url": "https://evil.example/?q=hidden"}}
+    assert check_body({**base, "messages": [{"role": "user", "content": [doc]}]})
+    assert check_body({**base, "messages": [{"role": "user", "content": "see https://example.org"}]}) is None
+
+
+def test_embed_reads_the_shared_cache_but_never_writes_it(tmp_path, monkeypatch):
+    import sqlite3
+
+    from ragkit import embed as emb
+
+    shared = tmp_path / "shared.sqlite"
+    vec = np.ones(4, dtype=np.float32) / 2
+    with sqlite3.connect(shared) as conn:
+        conn.execute("CREATE TABLE kv (k TEXT PRIMARY KEY, v BLOB)")
+        conn.execute("INSERT INTO kv VALUES (?, ?)", (stable_hash("emb", "local:m", "known"), vec.tobytes()))
+    shared.chmod(0o444)
+    monkeypatch.setenv("RAG_CACHE_DIR", str(tmp_path / "team"))
+    monkeypatch.setenv("RAG_EMBED_SHARED_CACHE", str(shared))
+    monkeypatch.setattr(emb, "_cache", None)
+    monkeypatch.setattr(emb, "_shared", [])
+    computed = []
+    monkeypatch.setattr(emb, "_embed_uncached",
+                        lambda texts, model, bs: computed.extend(texts) or np.ones((len(texts), 4), np.float32))
+    out = emb.embed(["known", "new"], model="local:m")
+    assert computed == ["new"] and np.allclose(out[0], vec)
+    assert emb._get_cache().get(stable_hash("emb", "local:m", "new")) is not None  # new vectors: own cache

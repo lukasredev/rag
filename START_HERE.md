@@ -33,7 +33,7 @@ the "team" is just you: one name and one token, the same as for a team.
 
 ```
 ANTHROPIC_API_KEY=sk-ant-...
-RAG_TEAM=your-team-name          # or your own name if you work alone
+RAG_TEAM=your-team-name
 RAG_TOKEN=your-token
 RAG_SERVER=https://viscon-eval.lukasre.ch
 ```
@@ -64,17 +64,17 @@ embeds the whole corpus, which takes 3 to 10 minutes on a laptop; after that it 
 
 ## 2. Read your track (15 minutes)
 
-Open `tracks/papers/README.md`. It explains the scenario, what the data looks like, the types of questions,
+Open [`tracks/papers/README.md`](tracks/papers/README.md). It explains the scenario, what the data looks like, the types of questions,
 how answers are scored and what your pipeline must return. Then look at the data yourself: open the corpus and
 a few questions in `tracks/papers/data/test.jsonl`. These test questions are public, with the expected answers.
 
 | track | your pipeline gets | it returns | starting pipeline scores about |
 |---|---|---|---|
-| `papers` | a question about one research paper | a short answer or `UNANSWERABLE`, paragraph ids | 0.20 |
-| `technews` | a question about 2023 tech news | a short answer, article ids | 0.30 |
-| `rfc` | a question about internet protocols | an answer or `UNANSWERABLE`, RFC section ids | 0.82 |
-| `shell` | "how do I …" in plain English | one bash command, man-page paragraph ids | 0.00 (fix the first TODO) |
-| `codesearch` | a description of a Python function | a ranking of function ids | 0.28 (MRR) |
+| [`papers`](tracks/papers/README.md) | a question about one research paper | a short answer or `UNANSWERABLE`, paragraph ids | 0.20 |
+| [`technews`](tracks/technews/README.md) | a question about 2023 tech news | a short answer, article ids | 0.30 |
+| [`rfc`](tracks/rfc/README.md) | a question about internet protocols | an answer or `UNANSWERABLE`, RFC section ids | 0.82 |
+| [`shell`](tracks/shell/README.md) | "how do I …" in plain English | one bash command, man-page paragraph ids | 0.00 (fix the first TODO) |
+| [`codesearch`](tracks/codesearch/README.md) | a description of a Python function | a ranking of function ids | 0.28 (MRR) |
 
 Our own best pipelines reach 0.80 to 0.95 on every track, with the same small model you have. So there is a
 lot of room, and getting there is about retrieval and prompting, not about a bigger model.

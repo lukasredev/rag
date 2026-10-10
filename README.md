@@ -40,7 +40,7 @@ scripts/submit.py  submit a pipeline to the evaluation server
 scripts/failures.py  print the questions a run got wrong, next to the expected answers
 START_HERE.md      the students' guide: setup, first hour, the loop, rules
 tracks/<name>/     the five tracks (see above)
-tests/             unit tests for ragkit
+tests/             unit tests for ragkit, the LLM proxy budget and the track scorers (CI: .github/workflows/tests.yml)
 ```
 
 ## For students
@@ -57,7 +57,7 @@ python -m ragkit.run --track technews --pipeline tracks/technews/skeleton/pipeli
 python -m ragkit.run --track technews --pipeline my_pipeline.py --out report.json   # per-question details
 
 # submit to the hidden evaluation set (max 100 per hour per track)
-python scripts/submit.py --server https://viscon-eval.lukasre.ch --team <team> --token <token> \
+python scripts/submit.py --team <team> --token <token> \
     --track technews --pipeline my_pipeline.py --label hybrid-v1 \
     --note "Added source/date headers to chunks; expect temporal questions to improve" --wait
 ```

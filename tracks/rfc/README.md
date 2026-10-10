@@ -64,8 +64,8 @@ class Pipeline:
 * **Abstention:** if the corpus does not answer the question, the answer must contain the token
   `UNANSWERABLE` (exactly this word, any case). An answer containing it counts as an abstention.
 * **Citations:** RFC ids, either document level (`"rfc9110"`) or section level (`"rfc9110#4.2.1"`;
-  `"RFC 9110 §4.2.1"` and `"RFC 9110, Section 4.2.1"` are also understood). Appendix sections are letters
-  (`"rfc9112#C.3"`). Section numbers are the RFC's own numbers. **Only the first 5 citations count.**
+  `"RFC 9110 §4.2.1"`, `"RFC 9110, Section 4.2.1"` and the rfc-editor.org form `"rfc9110#section-4.2.1"` are also
+  understood). Appendix sections are letters (`"rfc9112#C.3"`, `"RFC 9112 Appendix C.3"`). Section numbers are the RFC's own numbers. **Only the first 5 citations count.**
 
 ## Metrics (`track.py`)
 

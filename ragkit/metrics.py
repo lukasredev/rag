@@ -14,12 +14,13 @@ from collections import Counter
 from . import config
 
 _ARTICLES = re.compile(r"\b(a|an|the)\b")
+_NO_PUNCTUATION = str.maketrans("", "", string.punctuation)
 
 
 def normalize_answer(text: str) -> str:
     """SQuAD-style normalisation: lowercase, drop punctuation, articles and extra whitespace."""
     text = (text or "").lower()
-    text = "".join(ch for ch in text if ch not in set(string.punctuation))
+    text = text.translate(_NO_PUNCTUATION)
     text = _ARTICLES.sub(" ", text)
     return " ".join(text.split())
 
@@ -54,10 +55,10 @@ def recall_at_k(retrieved: list[str], relevant: list[str] | set[str], k: int) ->
 
 
 def precision_at_k(retrieved: list[str], relevant: list[str] | set[str], k: int) -> float:
-    top = retrieved[:k]
+    top, relevant = retrieved[:k], set(relevant)
     if not top:
         return 0.0
-    return len([r for r in top if r in set(relevant)]) / len(top)
+    return len([r for r in top if r in relevant]) / len(top)
 
 
 def reciprocal_rank(retrieved: list[str], relevant: list[str] | set[str]) -> float:
@@ -76,6 +77,9 @@ contradicting the reference is incorrect.
 Reply with JSON only: {"correct": true} or {"correct": false}."""
 
 
+JUDGE_MAX_CHARS = 3000  # longer answers are cut before judging (answers are meant to be short)
+
+
 def llm_judge(question: str, references: list[str], prediction: str, model: str | None = None) -> float:
     """Return 1.0 if an LLM judge thinks `prediction` matches one of the `references`, else 0.0."""
     from .llm import chat_json
@@ -84,6 +88,7 @@ def llm_judge(question: str, references: list[str], prediction: str, model: str 
         return 0.0
     model = model or config.get("RAG_JUDGE_MODEL", "claude-haiku-5-5")
     refs = "\n".join(f"- {r}" for r in references)
+    prediction = prediction[:JUDGE_MAX_CHARS]  # the judge's cost must not grow with the answer
     prompt = f"Question: {question}\n\nReference answer(s):\n{refs}\n\nPredicted answer: {prediction}"
     verdict = chat_json(prompt, system=JUDGE_SYSTEM, model=model, max_tokens=2000, cache=True)
     return float(bool(isinstance(verdict, dict) and verdict.get("correct") is True))

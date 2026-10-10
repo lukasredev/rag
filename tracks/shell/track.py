@@ -119,7 +119,7 @@ def _judge(question: dict, prediction: str) -> float:
     docs = "\n".join(f"- {t}" for t in question.get("oracle_text", [])[:8])
     prompt = (
         f"Request: {question['question']}\n\nReference command: {question['answer']}\n\n"
-        f"Man-page excerpts for `{question['cmd_name']}`:\n{docs}\n\nPredicted command: {prediction}"
+        f"Man-page excerpts for `{question['cmd_name']}`:\n{docs}\n\nPredicted command: {prediction[:1000]}"
     )
     verdict = chat_json(prompt, system=JUDGE_SYSTEM, model=config.get("RAG_JUDGE_MODEL", "claude-haiku-5-5"), max_tokens=2000, cache=True)
     return float(isinstance(verdict, dict) and verdict.get("equivalent") is True)

@@ -44,7 +44,8 @@ def _import_file(path: Path, module_name: str):
     spec = importlib.util.spec_from_file_location(module_name, path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
-    sys.path.insert(0, str(path.parent))  # lets a pipeline import helper files next to it
+    if str(path.parent) not in sys.path:
+        sys.path.insert(0, str(path.parent))  # lets a pipeline import helper files next to it
     spec.loader.exec_module(module)
     return module
 

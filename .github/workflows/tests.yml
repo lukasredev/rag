@@ -1,0 +1,23 @@
+# Runs the unit tests (tests/): ragkit, the LLM proxy's budget, and the track scorers that decide the
+# leaderboard. No network models, no API key: the LLM judge is stubbed and chat() runs offline.
+
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv venv --python 3.12
+      - run: uv pip install -e ".[server]" pytest httpx
+      - run: .venv/bin/python -m pytest -q tests

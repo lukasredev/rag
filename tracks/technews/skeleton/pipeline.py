@@ -4,7 +4,7 @@ What it does: cuts every article body into 1000-character windows, finds the 3 b
 keyword search, and asks the LLM to answer from them. That's it.
 
 Run it:
-    RAG_ENV_FILE=... .venv/bin/python -m ragkit.run --track technews --pipeline tracks/technews/skeleton/pipeline.py --limit 20
+    python -m ragkit.run --track technews --pipeline tracks/technews/skeleton/pipeline.py --limit 20
 """
 
 from __future__ import annotations

@@ -10,6 +10,8 @@ RAG_CACHE_DIR        where embeddings / LLM responses are cached (default: ~/.ca
 RAG_LLM_CACHE        "1" to cache LLM responses on disk (default: "1")
 RAG_LLM_OFFLINE      "1": chat() sends nothing and returns "" (retrieval-only runs without any API cost)
 RAG_MAX_USD          spend cap in USD for LLM calls through ragkit, or "off" (default: 5; see ragkit/spend.py)
+RAG_EMBED_SHARED_CACHE  extra read-only embeddings cache (sqlite) to look in first (the server's sandbox uses it)
+RAG_SERVER           evaluation server URL for scripts/submit.py (default: https://viscon-eval.lukasre.ch)
 RAG_ENV_FILE         extra .env file to load (e.g. a shared key file)
 OPENAI_API_KEY, OPENAI_BASE_URL, ANTHROPIC_API_KEY   provider credentials
 """
@@ -21,6 +23,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+DEFAULT_SERVER = "https://viscon-eval.lukasre.ch"
 _loaded = False
 
 

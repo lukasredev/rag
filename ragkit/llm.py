@@ -144,7 +144,7 @@ def chat(
         raise
     spend.settle(reserved, model, n_in, n_out)
     _record(n_in, n_out, False, model)
-    if use_cache:
+    if use_cache and text:  # an empty answer (e.g. a refusal) is not cached, so a re-run tries again
         _get_cache().set(key, text.encode("utf-8"))
     _trace(model, system, messages, text, False, n_in, n_out, start)
     return text

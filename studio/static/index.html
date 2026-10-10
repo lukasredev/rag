@@ -384,10 +384,10 @@ function rail() {
 }
 
 async function refreshSpend() { try { Object.assign(S.info, await api('/api/spend')); } catch {} rail(); }
-function go(v) { S.view = v; store.set('view', v); rail(); render(); if (v === 'compare' || v === 'run') loadRuns(); }
+function go(v) { S.view = v; S.readme = null; store.set('view', v); rail(); render(); if (v === 'compare' || v === 'run') loadRuns(); }
 
 async function switchTrack(name) {
-  S.track = name; store.set('track', name);
+  S.track = name; store.set('track', name); if (S.readme) S.readme = name;
   if (!curPipe()) S.pipe[name] = curTrack().pipelines[0].path;
   store.set('pipe', S.pipe);
   S.questions = await api(`/api/questions/${name}`);
@@ -414,7 +414,8 @@ async function ensureLoaded() {
   rail();
   clearTimeout(pollTimer);
   if (S.load.status === 'building') pollTimer = setTimeout(async () => {
-    S.load = await api(`/api/load?track=${S.track}&path=${encodeURIComponent(curPipe())}`);
+    try { S.load = await api(`/api/load?track=${S.track}&path=${encodeURIComponent(curPipe())}`); }
+    catch (e) { S.load = { status: 'error', error: `lost contact with Studio: ${e.message}` }; }
     if (S.load.status === 'building') return ensureLoaded();
     rail(); render();
   }, 1500);
@@ -633,7 +634,9 @@ function askOut() {
 async function askQ(id, text) {
   S.qid = id; S.asking = true; S.askError = null; viewAsk();
   try {
-    S.ask = await api('/api/ask', { track: S.track, path: curPipe(), question_id: id, question: text });
+    const r = await api('/api/ask', { track: S.track, path: curPipe(), question_id: id, question: text });
+    if (S.qid !== id) return;  // another question was picked meanwhile; its own request shows its answer
+    S.ask = r;
     const seen = seenSteps();
     S.ask.trace.forEach(e => seen.add(e.step)); seen.add('answer'); if (S.ask.scores) seen.add('score');
     S.session += (S.ask.cost?.usd || 0) + (S.ask.judge_cost?.usd || 0);
@@ -643,10 +646,11 @@ async function askQ(id, text) {
 
 // ── 02 corpus ───────────────────────────────────────────────────────────────────────────────────
 const cxTerms = () => (S.cx.q.toLowerCase().match(/\w+/g) || []);
+const reEsc = x => String(x).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 function mark(text) {
   const t = esc(text), terms = cxTerms();
   if (!terms.length) return t;
-  return t.replace(new RegExp(`\\b(${terms.map(x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'gi'), '<mark>$1</mark>');
+  return t.replace(new RegExp(`\\b(${terms.map(reEsc).join('|')})\\b`, 'gi'), '<mark>$1</mark>');
 }
 async function cxLoad(more) {
   const c = S.cx, facet = Object.entries(c.facets).map(([k, v]) => `${k}:${v}`).join('|');
@@ -673,7 +677,7 @@ function histogram(h) {
 function docHtml(d) {
   const meta = Object.entries(d.meta).filter(([, v]) => v != null && v !== '');
   const anchorIsPart = d.anchor && d.parts.some(p => p.id === d.anchor) && !S.cx.hl;
-  const secRx = d.anchor && !anchorIsPart && !S.cx.hl && !d.parts.some(p => p.id === d.anchor) ? new RegExp(`^\\s*(Appendix\\s+)?${d.anchor.replace(/\./g, '\\.')}\\.?\\s+\\S`) : null;
+  const secRx = d.anchor && !anchorIsPart && !S.cx.hl && !d.parts.some(p => p.id === d.anchor) ? new RegExp(`^\\s*(Appendix\\s+)?${reEsc(d.anchor)}\\.?\\s+\\S`) : null;
   let found = false;
   const hl = S.cx.hl ? esc(S.cx.hl) : null;
   const body = d.parts.map(p => {
@@ -696,7 +700,7 @@ function docHtml(d) {
   const unit = esc(S.cx.stats?.unit || 'document');
   return `<div class="panel"><h2 style="font-size:20px">${esc(d.title)}</h2>
     <p class="sub mono" style="margin-bottom:8px">${esc(d.id)} · ${d.words.toLocaleString()} words · ${d.parts.length} part(s)${d.anchor ? ` · showing <b>${esc(d.anchor)}</b>` : ''}</p>
-    <div class="kv" style="margin-bottom:10px">${meta.map(([k, v]) => `<div><span>${esc(k)}</span><b>${k === 'url' ? `<a href="${esc(v)}" target="_blank" rel="noopener">link</a>` : esc(v)}</b></div>`).join('')}</div>
+    <div class="kv" style="margin-bottom:10px">${meta.map(([k, v]) => `<div><span>${esc(k)}</span><b>${k === 'url' && /^https?:\/\//i.test(v) ? `<a href="${esc(v)}" target="_blank" rel="noopener">link</a>` : esc(v)}</b></div>`).join('')}</div>
     ${d.questions.length ? `<details ${d.questions.length <= 6 ? 'open' : ''}><summary>${d.questions.length} test question(s) need this ${unit}</summary>
       ${d.questions.map(q => `<div class="qi" data-askq="${esc(q.id)}"><div class="meta"><span>${esc(q.id)}</span><span>${esc(q.type || '')}</span><span class="mk">ask →</span></div>${esc(q.question)}</div>`).join('')}</details>`
       : `<p class="note" style="margin-top:0">No test question has this ${unit} as gold evidence (it can still be a distractor).</p>`}
@@ -1082,17 +1086,37 @@ async function diffRuns(picked, prim) {
 
 // ── start here: START_HERE.md ──────────────────────────────────────────────────────────────────
 let guideMd = null;
+const readmes = {};
 async function viewStart() {
+  if (S.readme) return viewReadme(S.readme);
   if (guideMd === null) {
     try { guideMd = (await api('/api/guide')).markdown; } catch (e) { guideMd = `# Start here\n\n${e.message}`; }
   }
-  if (S.view !== 'start') return;
+  if (S.view !== 'start' || S.readme) return;
   // the commands in the guide use the papers track: show them for the track picked in Studio
   const md = guideMd.replace(/(```[\s\S]*?```)/g, block => block.replace(/--track papers\b/g, `--track ${S.track}`)
-    .replace(/tracks\/papers\//g, `tracks/${S.track}/`));
+    .replace(/tracks\/papers\//g, `tracks/${S.track}/`))
+    .replace(/Open \[`tracks\/papers\/README\.md`\]\(tracks\/papers\/README\.md\)/, `Open [\`tracks/${S.track}/README.md\`](tracks/${S.track}/README.md)`);  // the picked track's README
   $('view').innerHTML = `<div class="panel guide">${mdToHtml(md)}
     <p class="note">This is <code>START_HERE.md</code>. Commands are shown for the track picked at the bottom left (<b>${esc(S.track)}</b>);
     the example outputs are from the papers track.</p></div>`;
+  bindReadmeLinks();
+}
+async function viewReadme(name) {
+  if (!(name in readmes)) {
+    try { readmes[name] = (await api(`/api/readme/${name}`)).markdown; } catch (e) { readmes[name] = `# ${name}\n\n${e.message}`; }
+  }
+  if (S.view !== 'start' || S.readme !== name) return;
+  const back = '<p><a href="#" class="back">← back to Start here</a></p>';
+  $('view').innerHTML = `<div class="panel guide">${back}${mdToHtml(readmes[name])}
+    <p class="note">This is <code>tracks/${esc(name)}/README.md</code>.</p>${back}</div>`;
+  document.querySelectorAll('#view a.back').forEach(a => a.onclick = e => { e.preventDefault(); S.readme = null; viewStart(); window.scrollTo(0, 0); });
+  bindReadmeLinks();
+}
+function bindReadmeLinks() {
+  document.querySelectorAll('#view a[data-readme]').forEach(a => a.onclick = e => {
+    e.preventDefault(); S.readme = a.dataset.readme; viewStart(); window.scrollTo(0, 0);
+  });
 }
 
 // A small Markdown renderer for the guide: headings, paragraphs, lists, code blocks, tables, inline code,
@@ -1104,7 +1128,8 @@ function mdInline(s) {
     .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
     .replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, '$1<i>$2</i>')
     .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '$1');  // links to files in the repo: just the text
+    .replace(/\[([^\]]+)\]\(tracks\/([a-z0-9_]+)\/README\.md\)/g, '<a href="#" data-readme="$2">$1</a>')  // shown in Studio
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '$1');  // other links to files in the repo: just the text
   return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[+i])}</code>`);
 }
 function mdToHtml(src) {
@@ -1175,8 +1200,8 @@ document.addEventListener('click', e => {
 }, true);
 document.addEventListener('keydown', e => {
   if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-  if (e.key >= '1' && e.key <= '5') go(VIEWS[+e.key - 1].id);
-  if (S.view === 'ask' && (e.key === 'j' || e.key === 'k')) {
+  if (/^[0-9]$/.test(e.key) && views()[+e.key]) go(views()[+e.key].id);  // the numbers on the rail: 00, 01, ...
+  if (S.view === 'ask' && !S.asking && (e.key === 'j' || e.key === 'k')) {  // one paid request at a time
     const qs = filteredQs(), i = qs.findIndex(q => q.id === S.qid);
     const next = qs[Math.max(0, Math.min(qs.length - 1, i + (e.key === 'j' ? 1 : -1)))];
     if (next) askQ(next.id);

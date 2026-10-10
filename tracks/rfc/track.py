@@ -17,11 +17,17 @@ PUBLIC_FIELDS = ["id", "question"]
 ABSTAIN = "UNANSWERABLE"
 MAX_CITATIONS = 5
 
-_CITE = re.compile(r"rfc[\s\-_]*0*(\d+)\s*(?:(?:#|§|,?\s*sec(?:tion|\.)?)\s*(?:appendix\s+)?([A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*))?", re.I)
+# "#", "§", "section", "sec." or "appendix", optionally followed by a word like the "section-" of rfc-editor.org
+# anchors ("rfc9110#section-4.2"), then the section number itself
+_CITE = re.compile(
+    r"rfc[\s\-_]*0*(\d+)\s*(?:(?:#|§|,?\s*(?:section\b|sec\b\.?|appendix\b))\s*"
+    r"(?:(?:section|sec|appendix)\b[\s\-.]*)?([A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*))?",
+    re.I,
+)
 
 
 def parse_citation(cite: str) -> tuple[str | None, str | None]:
-    """'rfc9110#4.2' / 'RFC 9110 §4.2' / 'rfc9110' -> ('rfc9110', '4.2' | None)."""
+    """'rfc9110#4.2' / 'RFC 9110 §4.2' / 'rfc9110#section-4.2' / 'rfc9110' -> ('rfc9110', '4.2' | None)."""
     m = _CITE.search(str(cite))
     if not m:
         return None, None

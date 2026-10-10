@@ -12,8 +12,10 @@ so cosine similarity is just a dot product:  scores = doc_vectors @ query_vector
 
 from __future__ import annotations
 
+import sqlite3
 import threading
 import time
+from pathlib import Path
 
 import numpy as np
 
@@ -24,6 +26,7 @@ from .cache import KVCache, stable_hash
 _lock = threading.Lock()
 _models: dict[str, object] = {}
 _cache: KVCache | None = None
+_shared: list = []  # [KVCache | None] once looked up: a read-only cache shared by everyone (RAG_EMBED_SHARED_CACHE)
 
 
 def _get_cache() -> KVCache:
@@ -32,6 +35,21 @@ def _get_cache() -> KVCache:
         if _cache is None:
             _cache = KVCache(config.cache_dir() / "embeddings.sqlite")
         return _cache
+
+
+def _shared_lookup(keys: list[str]) -> dict[str, bytes]:
+    """Embeddings from RAG_EMBED_SHARED_CACHE (on the server: the track's warmed cache, read-only, so one team
+    can't change the vectors another team gets). New embeddings are written to the own cache only."""
+    with _lock:
+        if not _shared:
+            path = config.get("RAG_EMBED_SHARED_CACHE")
+            _shared.append(KVCache(Path(path), readonly=True) if path and Path(path).exists() else None)
+    if _shared[0] is None or not keys:
+        return {}
+    try:
+        return _shared[0].get_many(keys)
+    except sqlite3.Error:  # unreadable shared cache: compute instead
+        return {}
 
 
 def _local_model(name: str, trust_remote_code: bool = False):
@@ -69,6 +87,7 @@ def embed(texts: list[str], model: str | None = None, batch_size: int = 64) -> n
     cache = _get_cache()
     keys = [stable_hash("emb", model, t) for t in texts]
     found = cache.get_many(list(set(keys)))
+    found.update(_shared_lookup([k for k in set(keys) if k not in found]))
 
     missing_order: dict[str, str] = {}
     for k, t in zip(keys, texts):

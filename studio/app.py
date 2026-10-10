@@ -19,6 +19,7 @@ import hmac
 import importlib.util
 import json
 import os
+import re
 import sys
 import threading
 import time
@@ -68,7 +69,7 @@ _jobs: dict[str, dict] = {}
 def track(name: str):
     with _lock:
         if name not in _tracks:
-            if not (tracks_dir() / name / "track.py").exists():
+            if not re.fullmatch(r"[a-z0-9_]+", name) or not (tracks_dir() / name / "track.py").exists():
                 raise HTTPException(404, f"unknown track {name}")
             _tracks[name] = load_track(name)
         return _tracks[name]
@@ -130,20 +131,33 @@ def cost_of(events: list[dict]) -> dict:
     return out
 
 
-def pipelines_of(name: str) -> list[dict]:
+def _pipeline_paths(name: str) -> list[tuple[str, Path]]:
+    """(label, path) of every pipeline Studio offers for this track. Only these can be shown, loaded or run."""
     tdir = tracks_dir() / name
     found = [("skeleton", tdir / "skeleton" / "pipeline.py")]
     if PUBLIC:  # the shared Studio shows only the starter code, never solutions or files from the server's disk
-        found = [(label, path) for label, path in found if path.exists()]
-        return [{"label": label, "path": str(path.resolve()), "doc": _docstring(path), "custom": False} for label, path in found]
+        return [(label, path) for label, path in found if path.exists()]
     examples = sorted((tdir / "examples").iterdir()) if (tdir / "examples").exists() else []  # not in the student repo
     found += [(d.name, d / "pipeline.py") for d in examples if (d / "pipeline.py").exists()]
     found += [(f"{p.parent.name}/{p.name}", p) for p in EXTRA_PIPELINES + _user_pipelines()]
-    out = []
-    for label, path in found:
-        doc = _docstring(path)
-        out.append({"label": label, "path": str(path.resolve()), "doc": doc, "custom": not path.is_relative_to(tdir)})
-    return out
+    return found
+
+
+def pipelines_of(name: str) -> list[dict]:
+    tdir = tracks_dir() / name
+    return [{"label": label, "path": str(path.resolve()), "doc": _docstring(path), "custom": not path.is_relative_to(tdir)}
+            for label, path in _pipeline_paths(name)]
+
+
+def listed_pipeline(track_name: str, path: str) -> Path:
+    """`path` if it is one of the track's listed pipelines, else 403: Studio never imports any other file."""
+    track(track_name)
+    p = Path(path).resolve()
+    if p not in {q.resolve() for _, q in _pipeline_paths(track_name)}:
+        raise HTTPException(403, "only listed pipelines can be loaded; add yours with + first")
+    if not p.exists():
+        raise HTTPException(404, f"{p} does not exist")
+    return p
 
 
 def _user_pipelines() -> list[Path]:
@@ -196,31 +210,39 @@ class Loaded:
                 "build_trace": self.build_trace, "stale": self.signature != _signature(self.path)}
 
 
+_import_lock = threading.Lock()
+_pipeline_folders: set[str] = set()
+
+
 def _import_pipeline(path: Path):
     folder = str(path.parent.resolve())
-    # forget helper modules imported earlier from this folder, so edits to them are picked up too
-    for name, mod in list(sys.modules.items()):
-        if (getattr(mod, "__file__", None) or "").startswith(folder + os.sep):
-            del sys.modules[name]
-    name = "studio_pipeline_" + hashlib.sha1(folder.encode()).hexdigest()[:10]
-    spec = importlib.util.spec_from_file_location(name, path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    if folder in sys.path:
-        sys.path.remove(folder)
-    sys.path.insert(0, folder)
-    spec.loader.exec_module(module)
+    with _import_lock:  # sys.path and sys.modules are shared by all builds
+        _pipeline_folders.add(folder)
+        # Forget helper modules imported earlier from any pipeline folder: edits to them are picked up, and
+        # `import retrieval` in b/pipeline.py can't get a/retrieval.py just because a was loaded first.
+        for name, mod in list(sys.modules.items()):
+            file = getattr(mod, "__file__", None) or ""
+            if any(file.startswith(f + os.sep) for f in _pipeline_folders):
+                del sys.modules[name]
+        sys.path[:] = [p for p in sys.path if p not in _pipeline_folders]
+        sys.path.insert(0, folder)
+        name = "studio_pipeline_" + hashlib.sha1(folder.encode()).hexdigest()[:10]
+        spec = importlib.util.spec_from_file_location(name, path)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[name] = module
+        spec.loader.exec_module(module)
     return module
 
 
-def get_loaded(track_name: str, path: str, rebuild_if_stale: bool = True) -> Loaded:
-    p = Path(path).resolve()
-    if not p.exists():
-        raise HTTPException(404, f"{p} does not exist")
+def get_loaded(track_name: str, path: str, retry_error: bool = False) -> Loaded:
+    """The loaded pipeline, (re)built if it is new or its code changed. A failed build is only retried when the
+    code changed or retry_error is set (the student picked the pipeline again), so the error stays visible."""
+    p = listed_pipeline(track_name, path)
     key = f"{track_name}|{p}"
     with _lock:
         cur = _loaded.get(key)
-        if cur is None or cur.status == "error" or (rebuild_if_stale and cur.signature != _signature(p)):
+        stale = cur is not None and cur.signature != _signature(p)
+        if cur is None or stale or (retry_error and cur.status == "error"):
             if cur is None or cur.status != "building":
                 cur = _loaded[key] = Loaded(track_name, p)
         return cur
@@ -278,13 +300,20 @@ def info():
 
 @app.get("/api/guide")
 def guide():
-    """START_HERE.md, with the server address filled in when RAG_SERVER is set."""
+    """START_HERE.md, with the server address replaced when RAG_SERVER points to another server."""
     path = ROOT / "START_HERE.md"
     text = path.read_text() if path.exists() else "# Start here\n\nSTART_HERE.md is missing from this folder."
     server = config.get("RAG_SERVER")
     if server:
-        text = text.replace("http://<server address>:8000", server.rstrip("/"))
+        text = text.replace(config.DEFAULT_SERVER, server.rstrip("/"))
     return {"markdown": text}
+
+
+@app.get("/api/readme/{track_name}")
+def readme(track_name: str):
+    """A track's README.md, so the guide can link to it."""
+    path = track(track_name).DIR / "README.md"
+    return {"markdown": path.read_text() if path.exists() else f"# {track_name}\n\nThis track has no README.md."}
 
 
 @app.get("/api/spend")
@@ -345,12 +374,16 @@ class LoadIn(BaseModel):
 
 @app.post("/api/load")
 def load(body: LoadIn):
-    return get_loaded(body.track, body.path).info()
+    return get_loaded(body.track, body.path, retry_error=True).info()
 
 
 @app.get("/api/load")
 def load_status(track: str, path: str):
-    return get_loaded(track, path, rebuild_if_stale=False).info()
+    """Status only: polling never starts a build (a failed build would otherwise restart forever)."""
+    cur = _loaded.get(f"{track}|{listed_pipeline(track, path)}")
+    if cur is None:
+        raise HTTPException(409, "pipeline is not loaded")
+    return cur.info()
 
 
 class AskIn(BaseModel):
@@ -435,7 +468,9 @@ def _run_job(job: dict, loaded: Loaded, qs: list[dict], workers: int):
         report.update({k: job[k] for k in ("id", "track", "path", "label", "created", "model")},
                       cancelled=job["cancel"], totals=totals, judge_tokens=judge_tokens,
                       seconds=round(time.time() - job["created"], 1))
-        (RUNS / f"{job['id']}.json").write_text(json.dumps(report))
+        tmp = RUNS / f".{job['id']}.tmp"  # written in full first, so /api/runs never reads half a file
+        tmp.write_text(json.dumps(report))
+        os.replace(tmp, RUNS / f"{job['id']}.json")
         job["status"] = "cancelled" if job["cancel"] else "done"
     except spend.SpendCapError as e:
         job["status"], job["error"] = "error", str(e)
@@ -474,7 +509,10 @@ def _is_opus(model) -> bool:
 def list_runs(track: str | None = None):
     out = []
     for f in sorted(RUNS.glob("*.json"), reverse=True):
-        r = json.loads(f.read_text())
+        try:
+            r = json.loads(f.read_text())
+        except (OSError, ValueError):  # a broken file must not hide every other run
+            continue
         if (not track or r["track"] == track) and not _is_opus(r.get("model")):
             out.append(_summary(r, "studio"))
     # reference results that ship with the tracks (no traces)
@@ -533,6 +571,7 @@ def delete_run(run_id: str):
 # ── corpus explorer ─────────────────────────────────────────────────────────────────────────────
 
 _corpora: dict[str, dict] = {}
+_corpus_locks: dict[str, threading.Lock] = {}
 
 
 def corpus(track_name: str) -> dict:
@@ -540,6 +579,15 @@ def corpus(track_name: str) -> dict:
     with _lock:
         if track_name in _corpora:
             return _corpora[track_name]
+        lock = _corpus_locks.setdefault(track_name, threading.Lock())
+    with lock:  # many first requests at once load the corpus once, not once each
+        with _lock:
+            if track_name in _corpora:
+                return _corpora[track_name]
+        return _load_corpus(track_name)
+
+
+def _load_corpus(track_name: str) -> dict:
     adapter = CORPUS_ADAPTERS.get(track_name)
     if adapter is None:
         raise HTTPException(404, f"no corpus explorer for track {track_name}")
@@ -652,7 +700,7 @@ app.mount("/static", StaticFiles(directory=STATIC), name="static")
 # ── shared deployment: password and read-only ───────────────────────────────────────────────────────
 # Requests the read-only Studio answers (all GET). Everything else (loading or running a pipeline, asking a
 # question, adding pipelines, changing the model, runs) would run code or spend LLM budget.
-PUBLIC_GET = ("/", "/static/", "/api/info", "/api/guide", "/api/questions/", "/api/source", "/api/corpus-overview",
+PUBLIC_GET = ("/", "/static/", "/api/info", "/api/guide", "/api/readme/", "/api/questions/", "/api/source", "/api/corpus-overview",
               "/api/corpus/")
 COOKIE = "rag_studio"
 _secret = os.urandom(32)  # a restart logs everyone out
@@ -703,6 +751,23 @@ async def public_guard(request: Request, call_next):
     if not allowed:
         return JSONResponse({"detail": "the shared RAG Studio is read-only; run Studio on your laptop for this"},
                             status_code=403)
+    return await call_next(request)
+
+
+LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1"}
+
+
+@app.middleware("http")
+async def local_guard(request: Request, call_next):
+    """Local Studio can run code and spend LLM budget, so only pages it served itself may use it: the Host must be
+    localhost (a DNS-rebinding page would send its own name) and POST/DELETE must not come from another origin."""
+    if PUBLIC:
+        return await call_next(request)
+    if request.url.hostname not in LOCAL_HOSTS:
+        return JSONResponse({"detail": "RAG Studio only answers requests for localhost"}, status_code=403)
+    origin = request.headers.get("origin")
+    if request.method not in ("GET", "HEAD") and origin and urllib.parse.urlparse(origin).hostname not in LOCAL_HOSTS:
+        return JSONResponse({"detail": "cross-origin request refused"}, status_code=403)
     return await call_next(request)
 
 

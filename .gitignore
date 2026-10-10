@@ -4,6 +4,7 @@ __pycache__/
 *.pyc
 tracks/*/raw/
 server/state/
+.teams.csv
 server/server.log
 server/server.pid
 .env

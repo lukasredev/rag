@@ -5,7 +5,8 @@
         --wait
 
 Team name, token and server URL can also come from the env vars RAG_TEAM, RAG_TOKEN, RAG_SERVER
-(or a .env file). If your pipeline needs helper modules, pass a directory: it is zipped automatically.
+(or a .env file); the server defaults to https://viscon-eval.lukasre.ch. If your pipeline needs helper modules,
+pass a directory: it is zipped automatically.
 """
 
 from __future__ import annotations
@@ -20,6 +21,8 @@ from pathlib import Path
 
 import requests
 from dotenv import load_dotenv
+
+from ragkit.config import DEFAULT_SERVER
 
 
 def pack(path: Path) -> tuple[str, bytes]:
@@ -38,7 +41,7 @@ def pack(path: Path) -> tuple[str, bytes]:
 def main():
     load_dotenv()
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--server", default=os.environ.get("RAG_SERVER", "http://localhost:8000"))
+    p.add_argument("--server", default=os.environ.get("RAG_SERVER", DEFAULT_SERVER))
     p.add_argument("--team", default=os.environ.get("RAG_TEAM"))
     p.add_argument("--token", default=os.environ.get("RAG_TOKEN"))
     p.add_argument("--track", required=True)

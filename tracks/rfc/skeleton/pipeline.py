@@ -4,7 +4,7 @@ What it does: reads the RAW RFC text files, cuts them into fixed 1000-character 
 footers and form feeds included), finds the 3 best windows with BM25, and asks the LLM to answer.
 
 Run it:
-    RAG_ENV_FILE=... python -m ragkit.run --track rfc --pipeline tracks/rfc/skeleton/pipeline.py --limit 20
+    python -m ragkit.run --track rfc --pipeline tracks/rfc/skeleton/pipeline.py --limit 20
 
 Every TODO below is a place where a better decision makes a measurable difference.
 """

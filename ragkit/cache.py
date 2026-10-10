@@ -19,20 +19,27 @@ def stable_hash(*parts) -> str:
 
 
 class KVCache:
-    def __init__(self, path: Path):
-        path.parent.mkdir(parents=True, exist_ok=True)
+    def __init__(self, path: Path, readonly: bool = False):
+        """readonly: open an existing cache that nobody writes to while it is open (it may sit on a read-only
+        file system, e.g. the shared embeddings in the server's sandbox)."""
         self._local = threading.local()
         self._path = str(path)
+        self._readonly = readonly
         self._write_lock = threading.Lock()
-        conn = self._conn()
-        conn.execute("CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v BLOB)")
-        conn.commit()
+        if not readonly:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            conn = self._conn()
+            conn.execute("CREATE TABLE IF NOT EXISTS kv (k TEXT PRIMARY KEY, v BLOB)")
+            conn.commit()
 
     def _conn(self) -> sqlite3.Connection:
         conn = getattr(self._local, "conn", None)
         if conn is None:
-            conn = sqlite3.connect(self._path, timeout=60)
-            conn.execute("PRAGMA journal_mode=WAL")
+            if self._readonly:
+                conn = sqlite3.connect(f"{Path(self._path).resolve().as_uri()}?mode=ro&immutable=1", uri=True)
+            else:
+                conn = sqlite3.connect(self._path, timeout=60)
+                conn.execute("PRAGMA journal_mode=WAL")
             self._local.conn = conn
         return conn
 

@@ -4,7 +4,7 @@ What it does: BM25 over all man-page paragraphs, top 3 paragraphs go into a mini
 Look at the TODOs; every one of them is worth points on the leaderboard.
 
 Run it:
-    RAG_ENV_FILE=... .venv/bin/python -m ragkit.run --track shell --pipeline tracks/shell/skeleton/pipeline.py --limit 20
+    python -m ragkit.run --track shell --pipeline tracks/shell/skeleton/pipeline.py --limit 20
 """
 
 import json
